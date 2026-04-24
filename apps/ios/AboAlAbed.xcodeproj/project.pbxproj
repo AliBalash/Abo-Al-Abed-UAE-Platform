@@ -1,0 +1,577 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05045245EE9D55D512091DEA /* AboAlAbedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B321168A7465498F162B1C /* AboAlAbedApp.swift */; };
+		11841165FE0BFC7E806AE092 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83A32469169502533CB6AE2 /* RootView.swift */; };
+		270D0382A97CF1D63BCB833D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C41D94C984E668A29BE8FD53 /* MapKit.framework */; };
+		4C5F4084522CEEF297FD0DAB /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCE5B5E06828C31A7702668 /* AuthView.swift */; };
+		4D2D45DC9BB819AE99CCD10E /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3D4B5E4E0DA5D111CA286D /* BrandTheme.swift */; };
+		6A7D7D9EF4E73672336FE487 /* BranchSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CC48B6FA2ACFA1ECBDC45C /* BranchSelectionView.swift */; };
+		6C8A2AB54C6F2C77E77AFBAA /* AddressPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3965DFFE4ACAEB888A8D383A /* AddressPickerView.swift */; };
+		9022EC2E71C1F5C62828F4F2 /* ProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4874F21C4EAB2AA65F400765 /* ProductDetailView.swift */; };
+		90760257E2F4431AAD52129D /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5A018F1169A75504CF564A /* APIClient.swift */; };
+		99D57472EDA46BDC91446079 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299CBD3A705F924EF5AC3AB4 /* AppModel.swift */; };
+		AA9F9D103C8675A78A9F8F62 /* OrderTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D22288CF70BD01068E04C0 /* OrderTrackingView.swift */; };
+		ACBED48173AB417CE7D569C3 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1977F0EE992E9F67896F62 /* AppModelTests.swift */; };
+		B9A60987DE661C316409A13B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8592E04CAFB9C87BAC70C6B3 /* HomeView.swift */; };
+		CE5B1074F4861712E7750E2F /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB72D60B85AC06A85F862C0 /* MockAPIClient.swift */; };
+		D5556A57CDC607CF77E924E6 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12097DA810AB391AB61A43B7 /* AppEnvironment.swift */; };
+		F07659F1FC556E2C476839EE /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112C5319F8DAD53744A0CD20 /* Models.swift */; };
+		F513A938B71439312830C5D8 /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94A6898A3F6A4822A1B0B52 /* CartView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FEB2DDEA904328CD76481D50 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA487C3EB826A7969198E670 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96DE4A1BD379732448B95051;
+			remoteInfo = AboAlAbed;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		06B321168A7465498F162B1C /* AboAlAbedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboAlAbedApp.swift; sourceTree = "<group>"; };
+		10625C4C7D2DA3B0A005C7F8 /* AboAlAbedTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AboAlAbedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		112C5319F8DAD53744A0CD20 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		12097DA810AB391AB61A43B7 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		1C3D4B5E4E0DA5D111CA286D /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
+		299CBD3A705F924EF5AC3AB4 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		37D22288CF70BD01068E04C0 /* OrderTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderTrackingView.swift; sourceTree = "<group>"; };
+		3965DFFE4ACAEB888A8D383A /* AddressPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressPickerView.swift; sourceTree = "<group>"; };
+		43CC48B6FA2ACFA1ECBDC45C /* BranchSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchSelectionView.swift; sourceTree = "<group>"; };
+		4874F21C4EAB2AA65F400765 /* ProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailView.swift; sourceTree = "<group>"; };
+		4F1977F0EE992E9F67896F62 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
+		7C5A018F1169A75504CF564A /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		8592E04CAFB9C87BAC70C6B3 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		AEEAF29E416EAF4394CB87F6 /* AboAlAbed.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AboAlAbed.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBCE5B5E06828C31A7702668 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		C41D94C984E668A29BE8FD53 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		C94A6898A3F6A4822A1B0B52 /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
+		CAB72D60B85AC06A85F862C0 /* MockAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAPIClient.swift; sourceTree = "<group>"; };
+		D83A32469169502533CB6AE2 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0707972CA1A1917BBC84B418 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				270D0382A97CF1D63BCB833D /* MapKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		12AECD8CC9E4EC2FE8ACA5D3 /* AboAlAbed */ = {
+			isa = PBXGroup;
+			children = (
+				C7F844787D833A94E4E0A797 /* App */,
+				E6501929879ABCE380A68915 /* Data */,
+				3958AE73BAA1D21E9436CD56 /* DesignSystem */,
+				7FA6EFBCBA0F6567CD89299D /* Domain */,
+				72F652AF513C2E1792DC0A78 /* Features */,
+			);
+			path = AboAlAbed;
+			sourceTree = "<group>";
+		};
+		24D385FD05550929EB717D95 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C41D94C984E668A29BE8FD53 /* MapKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2CF5DD17B0F7C60C251D0302 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AEEAF29E416EAF4394CB87F6 /* AboAlAbed.app */,
+				10625C4C7D2DA3B0A005C7F8 /* AboAlAbedTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3958AE73BAA1D21E9436CD56 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				1C3D4B5E4E0DA5D111CA286D /* BrandTheme.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		40686C320AC4FCB2CE518167 /* Cart */ = {
+			isa = PBXGroup;
+			children = (
+				C94A6898A3F6A4822A1B0B52 /* CartView.swift */,
+			);
+			path = Cart;
+			sourceTree = "<group>";
+		};
+		716B930880C70380A466C666 /* Orders */ = {
+			isa = PBXGroup;
+			children = (
+				37D22288CF70BD01068E04C0 /* OrderTrackingView.swift */,
+			);
+			path = Orders;
+			sourceTree = "<group>";
+		};
+		72F652AF513C2E1792DC0A78 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				E4EB86E447C3E749653701EB /* Addresses */,
+				E66CEF47429DAD5BEE937C74 /* Auth */,
+				FCE88EFDDD36295832001B7A /* BranchSelection */,
+				40686C320AC4FCB2CE518167 /* Cart */,
+				E5E2BE4A95D0270824AD9C1C /* Home */,
+				716B930880C70380A466C666 /* Orders */,
+				DDA3AFEC5E316EC7CE4A7407 /* Product */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		7FA6EFBCBA0F6567CD89299D /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				112C5319F8DAD53744A0CD20 /* Models.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		9C8BFD738DE802C151CC0C59 = {
+			isa = PBXGroup;
+			children = (
+				12AECD8CC9E4EC2FE8ACA5D3 /* AboAlAbed */,
+				D2360D1E6420C7AFA897E241 /* AboAlAbedTests */,
+				24D385FD05550929EB717D95 /* Frameworks */,
+				2CF5DD17B0F7C60C251D0302 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C7F844787D833A94E4E0A797 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				06B321168A7465498F162B1C /* AboAlAbedApp.swift */,
+				12097DA810AB391AB61A43B7 /* AppEnvironment.swift */,
+				299CBD3A705F924EF5AC3AB4 /* AppModel.swift */,
+				D83A32469169502533CB6AE2 /* RootView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D2360D1E6420C7AFA897E241 /* AboAlAbedTests */ = {
+			isa = PBXGroup;
+			children = (
+				4F1977F0EE992E9F67896F62 /* AppModelTests.swift */,
+			);
+			path = AboAlAbedTests;
+			sourceTree = "<group>";
+		};
+		DDA3AFEC5E316EC7CE4A7407 /* Product */ = {
+			isa = PBXGroup;
+			children = (
+				4874F21C4EAB2AA65F400765 /* ProductDetailView.swift */,
+			);
+			path = Product;
+			sourceTree = "<group>";
+		};
+		E4EB86E447C3E749653701EB /* Addresses */ = {
+			isa = PBXGroup;
+			children = (
+				3965DFFE4ACAEB888A8D383A /* AddressPickerView.swift */,
+			);
+			path = Addresses;
+			sourceTree = "<group>";
+		};
+		E5E2BE4A95D0270824AD9C1C /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				8592E04CAFB9C87BAC70C6B3 /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		E6501929879ABCE380A68915 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				7C5A018F1169A75504CF564A /* APIClient.swift */,
+				CAB72D60B85AC06A85F862C0 /* MockAPIClient.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		E66CEF47429DAD5BEE937C74 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				BBCE5B5E06828C31A7702668 /* AuthView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		FCE88EFDDD36295832001B7A /* BranchSelection */ = {
+			isa = PBXGroup;
+			children = (
+				43CC48B6FA2ACFA1ECBDC45C /* BranchSelectionView.swift */,
+			);
+			path = BranchSelection;
+			sourceTree = "<group>";
+		};
+		"TEMP_86BE2152-5459-41D0-AA0B-9A113026D9DB" /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		00D64E31906D6596B8ECB5D1 /* AboAlAbedTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BFAA45EABE179AE09BE7F3A8 /* Build configuration list for PBXNativeTarget "AboAlAbedTests" */;
+			buildPhases = (
+				3F533FD3D3828D4FA90E923B /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EDD10ADEA565EC4C8F50A1CC /* PBXTargetDependency */,
+			);
+			name = AboAlAbedTests;
+			packageProductDependencies = (
+			);
+			productName = AboAlAbedTests;
+			productReference = 10625C4C7D2DA3B0A005C7F8 /* AboAlAbedTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		96DE4A1BD379732448B95051 /* AboAlAbed */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 585CD06A99554B4C2B401913 /* Build configuration list for PBXNativeTarget "AboAlAbed" */;
+			buildPhases = (
+				E7AC4220DD6561A1A029CA84 /* Sources */,
+				0707972CA1A1917BBC84B418 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AboAlAbed;
+			packageProductDependencies = (
+			);
+			productName = AboAlAbed;
+			productReference = AEEAF29E416EAF4394CB87F6 /* AboAlAbed.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DA487C3EB826A7969198E670 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = BE382A5D28C762D4ED537A3B /* Build configuration list for PBXProject "AboAlAbed" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 9C8BFD738DE802C151CC0C59;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				96DE4A1BD379732448B95051 /* AboAlAbed */,
+				00D64E31906D6596B8ECB5D1 /* AboAlAbedTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3F533FD3D3828D4FA90E923B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACBED48173AB417CE7D569C3 /* AppModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7AC4220DD6561A1A029CA84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90760257E2F4431AAD52129D /* APIClient.swift in Sources */,
+				05045245EE9D55D512091DEA /* AboAlAbedApp.swift in Sources */,
+				6C8A2AB54C6F2C77E77AFBAA /* AddressPickerView.swift in Sources */,
+				D5556A57CDC607CF77E924E6 /* AppEnvironment.swift in Sources */,
+				99D57472EDA46BDC91446079 /* AppModel.swift in Sources */,
+				4C5F4084522CEEF297FD0DAB /* AuthView.swift in Sources */,
+				6A7D7D9EF4E73672336FE487 /* BranchSelectionView.swift in Sources */,
+				4D2D45DC9BB819AE99CCD10E /* BrandTheme.swift in Sources */,
+				F513A938B71439312830C5D8 /* CartView.swift in Sources */,
+				B9A60987DE661C316409A13B /* HomeView.swift in Sources */,
+				CE5B1074F4861712E7750E2F /* MockAPIClient.swift in Sources */,
+				F07659F1FC556E2C476839EE /* Models.swift in Sources */,
+				AA9F9D103C8675A78A9F8F62 /* OrderTrackingView.swift in Sources */,
+				9022EC2E71C1F5C62828F4F2 /* ProductDetailView.swift in Sources */,
+				11841165FE0BFC7E806AE092 /* RootView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EDD10ADEA565EC4C8F50A1CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 96DE4A1BD379732448B95051 /* AboAlAbed */;
+			targetProxy = FEB2DDEA904328CD76481D50 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		244D1104F1FD4AC0DFF24EAA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		286A1DA040C1C961C9EB2B06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		5FE9CABBC4DF1A8A6F101AC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Abo Al-Abed";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aboalabed.uae;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		CADD342E9F7B36671718BA63 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Abo Al-Abed";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aboalabed.uae;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D0EAD398FE64124E2A9D9D5A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aboalabed.AboAlAbedTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AboAlAbed.app/AboAlAbed";
+			};
+			name = Debug;
+		};
+		F7978A498A0B42AD02DCC851 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aboalabed.AboAlAbedTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AboAlAbed.app/AboAlAbed";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		585CD06A99554B4C2B401913 /* Build configuration list for PBXNativeTarget "AboAlAbed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5FE9CABBC4DF1A8A6F101AC9 /* Debug */,
+				CADD342E9F7B36671718BA63 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BE382A5D28C762D4ED537A3B /* Build configuration list for PBXProject "AboAlAbed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				244D1104F1FD4AC0DFF24EAA /* Debug */,
+				286A1DA040C1C961C9EB2B06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BFAA45EABE179AE09BE7F3A8 /* Build configuration list for PBXNativeTarget "AboAlAbedTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0EAD398FE64124E2A9D9D5A /* Debug */,
+				F7978A498A0B42AD02DCC851 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DA487C3EB826A7969198E670 /* Project object */;
+}
