@@ -19,5 +19,7 @@ apps/ios/build
 DerivedData
 *.xcworkspace
 *.xcodeproj/xcuserdata
+*.xcodeproj/xcuserdata/
+*.xcodeproj/**/xcuserdata/
 *.xcuserstate
 *.log
