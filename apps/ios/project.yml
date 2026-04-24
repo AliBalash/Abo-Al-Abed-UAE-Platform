@@ -1,0 +1,35 @@
+name: AboAlAbed
+options:
+  bundleIdPrefix: com.aboalabed
+targets:
+  AboAlAbed:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - AboAlAbed
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aboalabed.uae
+        SWIFT_VERSION: 6.0
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Abo Al-Abed
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.food-and-drink
+        INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIStatusBarStyle: UIStatusBarStyleDarkContent
+    dependencies:
+      - sdk: MapKit.framework
+  AboAlAbedTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - AboAlAbedTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: AboAlAbed

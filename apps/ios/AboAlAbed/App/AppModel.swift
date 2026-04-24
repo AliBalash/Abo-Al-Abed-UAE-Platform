@@ -1,0 +1,124 @@
+import Foundation
+
+@MainActor
+final class AppModel: ObservableObject {
+    @Published var session: SessionUser?
+    @Published var savedAddresses: [SavedAddress] = []
+    @Published var selectedAddress: SavedAddress?
+    @Published var home: HomeSnapshot = .empty
+    @Published var favoriteIDs: Set<UUID> = []
+    @Published var cartItems: [CartItem] = []
+    @Published var branchRecommendation: BranchRecommendation?
+    @Published var selectedBranch: Branch?
+    @Published var activeOrder: CustomerOrder?
+    @Published var isBusy = false
+    @Published var errorMessage: String?
+
+    private let environment: AppEnvironment
+
+    init(environment: AppEnvironment) {
+        self.environment = environment
+    }
+
+    var isAuthenticated: Bool { session != nil }
+    var cartTotal: Double { cartItems.reduce(0) { $0 + $1.totalPrice } }
+    var cartCount: Int { cartItems.reduce(0) { $0 + $1.quantity } }
+
+    func login(email: String, password: String) async {
+        errorMessage = nil
+        isBusy = true
+        defer { isBusy = false }
+
+        do {
+            let result = try await environment.apiClient.login(email: email, password: password)
+            session = result
+            savedAddresses = try await environment.apiClient.loadAddresses()
+            selectedAddress = savedAddresses.first(where: \.isDefault) ?? savedAddresses.first
+            home = try await environment.apiClient.loadHome()
+            favoriteIDs = Set(try await environment.apiClient.loadFavoriteIDs())
+            activeOrder = try await environment.apiClient.loadActiveOrder()
+
+            if let selectedAddress {
+                let recommendation = try await environment.apiClient.recommendBranches(for: selectedAddress)
+                branchRecommendation = recommendation
+                selectedBranch = recommendation.primary
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func selectAddress(_ address: SavedAddress) async {
+        errorMessage = nil
+        selectedAddress = address
+        do {
+            let recommendation = try await environment.apiClient.recommendBranches(for: address)
+            branchRecommendation = recommendation
+            selectedBranch = recommendation.primary
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func toggleFavorite(for productID: UUID) {
+        if favoriteIDs.contains(productID) {
+            favoriteIDs.remove(productID)
+        } else {
+            favoriteIDs.insert(productID)
+        }
+    }
+
+    func addToCart(product: Product, variant: ProductVariant, selections: [ProductSelection]) {
+        let modifierTotal = selections.flatMap(\.options).reduce(0) { $0 + $1.priceDelta }
+        let unitPrice = variant.price + modifierTotal
+        let newItem = CartItem(
+            id: UUID(),
+            product: product,
+            variant: variant,
+            selections: selections,
+            quantity: 1,
+            unitPrice: unitPrice
+        )
+        cartItems.append(newItem)
+    }
+
+    func removeCartItem(_ item: CartItem) {
+        cartItems.removeAll { $0.id == item.id }
+    }
+
+    func placeOrder() async {
+        guard let address = selectedAddress, let branch = selectedBranch, !cartItems.isEmpty else {
+            errorMessage = "Select an address, branch, and at least one item before placing the order."
+            return
+        }
+
+        errorMessage = nil
+        isBusy = true
+        defer { isBusy = false }
+
+        do {
+            activeOrder = try await environment.apiClient.placeOrder(
+                cartItems: cartItems,
+                address: address,
+                branch: branch
+            )
+            cartItems = []
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func refreshActiveOrder() async {
+        guard let order = activeOrder else { return }
+
+        errorMessage = nil
+        isBusy = true
+        defer { isBusy = false }
+
+        do {
+            activeOrder = try await environment.apiClient.refreshOrder(id: order.id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
