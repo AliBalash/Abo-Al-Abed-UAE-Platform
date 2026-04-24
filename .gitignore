@@ -22,4 +22,5 @@ DerivedData
 *.xcodeproj/xcuserdata/
 *.xcodeproj/**/xcuserdata/
 *.xcuserstate
+apps/ios/AboAlAbed.xcodeproj/xcuserdata/
 *.log
