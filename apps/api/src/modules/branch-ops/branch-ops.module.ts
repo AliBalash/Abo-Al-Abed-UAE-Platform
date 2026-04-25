@@ -7,6 +7,7 @@ import type { AuthenticatedUser } from "../../common/authenticated-user.interfac
 import { assertOrderTransition } from "../../common/order-status";
 import { Roles } from "../../common/roles.decorator";
 import { AuditService } from "../audit/audit.module";
+import { buildMoney } from "../../common/mappers";
 import { NotificationsService } from "../notifications/notifications.module";
 import { OrdersService } from "../orders/orders.module";
 import { PrismaService } from "../../database/prisma.service";
@@ -41,21 +42,45 @@ class BranchOpsService {
       throw new BadRequestException("Branch context is required");
     }
 
-    const orders = await this.prisma.order.findMany({
-      where: { branchId: resolvedBranchId },
+    const [branch, orders] = await Promise.all([
+      this.prisma.branch.findUnique({ where: { id: resolvedBranchId } }),
+      this.prisma.order.findMany({
+      where: {
+        branchId: resolvedBranchId,
+        status: {
+          in: [
+            OrderStatus.AWAITING_PAYMENT,
+            OrderStatus.PAID,
+            OrderStatus.IN_PREPARATION,
+            OrderStatus.READY_FOR_PICKUP,
+            OrderStatus.PICKED_UP,
+          ],
+        },
+      },
       include: {
         branch: true,
-        items: true,
+        customer: { include: { customerProfile: true } },
+        address: true,
+        items: { include: { modifiers: true } },
+        pickupCode: true,
       },
       orderBy: { createdAt: "asc" },
-    });
+      }),
+    ]);
+
+    const mappedOrders = orders.map((order) => this.mapQueueOrder(order));
 
     return {
-      awaitingPayment: orders.filter((order) => order.status === OrderStatus.AWAITING_PAYMENT),
-      paid: orders.filter((order) => order.status === OrderStatus.PAID),
-      inPreparation: orders.filter((order) => order.status === OrderStatus.IN_PREPARATION),
-      ready: orders.filter((order) => order.status === OrderStatus.READY_FOR_PICKUP),
-      pickedUp: orders.filter((order) => order.status === OrderStatus.PICKED_UP).slice(-10),
+      branch: {
+        id: branch?.id ?? resolvedBranchId,
+        code: branch?.code,
+        nameEn: branch?.nameEn,
+      },
+      awaitingPayment: mappedOrders.filter((order) => order.status === OrderStatus.AWAITING_PAYMENT),
+      paid: mappedOrders.filter((order) => order.status === OrderStatus.PAID),
+      inPreparation: mappedOrders.filter((order) => order.status === OrderStatus.IN_PREPARATION),
+      ready: mappedOrders.filter((order) => order.status === OrderStatus.READY_FOR_PICKUP),
+      pickedUp: mappedOrders.filter((order) => order.status === OrderStatus.PICKED_UP).slice(-10),
     };
   }
 
@@ -125,6 +150,49 @@ class BranchOpsService {
     this.ordersGateway.emitEvent(eventName, { orderId, status: dto.status.toLowerCase() });
 
     return { ok: true };
+  }
+
+  private mapQueueOrder(order: any) {
+    const customerName = [order.customer?.customerProfile?.firstName, order.customer?.customerProfile?.lastName].filter(Boolean).join(" ");
+
+    return {
+      id: order.id,
+      orderCode: order.orderCode,
+      pickupToken: order.pickupCode?.token,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      customer: customerName || order.customer?.email || "Guest",
+      branchName: order.branch.nameEn,
+      placedAt: order.placedAt,
+      paidAt: order.paidAt,
+      readyAt: order.readyAt,
+      expiresAt: order.expiresAt,
+      total: buildMoney(order.grandTotal, order.currency),
+      grandTotal: buildMoney(order.grandTotal, order.currency),
+      itemCount: order.items.reduce((sum: number, item: any) => sum + item.quantity, 0),
+      address: {
+        label: order.address.customLabel || order.address.label?.toLowerCase(),
+        line1: order.address.line1,
+        line2: order.address.line2,
+        city: order.address.city,
+        emirate: order.address.emirate,
+        notes: order.address.notes,
+      },
+      items: order.items.map((item: any) => ({
+        id: item.id,
+        name: item.productNameEn,
+        variantName: item.variantNameEn,
+        quantity: item.quantity,
+        notes: item.notes,
+        unitPrice: buildMoney(item.unitPrice, order.currency),
+        totalPrice: buildMoney(item.totalPrice, order.currency),
+        modifiers: item.modifiers.map((modifier: any) => ({
+          group: modifier.modifierGroupNameEn,
+          option: modifier.optionNameEn,
+          priceDelta: buildMoney(modifier.priceDelta, order.currency),
+        })),
+      })),
+    };
   }
 }
 
