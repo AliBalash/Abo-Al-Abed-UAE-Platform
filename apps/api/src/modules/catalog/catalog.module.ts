@@ -209,7 +209,7 @@ class CatalogService {
       name: { en: product.nameEn, ar: product.nameAr },
       description: { en: product.descriptionEn, ar: product.descriptionAr },
       categorySlug: product.category.slug,
-      heroImageUrl: product.images[0]?.url ?? "",
+      heroImageUrl: this.resolveAssetUrl(product.images[0]?.url ?? ""),
       tags: product.productTags.map((tagLink: any) => tagLink.tag.code),
       isFeatured: product.isFeatured,
       variants: product.variants.map((variant: any) => ({
@@ -232,6 +232,15 @@ class CatalogService {
         })),
       })),
     };
+  }
+
+  private resolveAssetUrl(url: string) {
+    if (!url.startsWith("/")) {
+      return url;
+    }
+
+    const baseURL = process.env.PUBLIC_ASSET_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? 4000}`;
+    return `${baseURL.replace(/\/$/, "")}${url}`;
   }
 }
 
