@@ -29,7 +29,7 @@ function LoginPageContent() {
     <div className="login-shell">
       <div className="login-card">
         <div className="login-brand">
-          <div className="tag">Launch Cockpit</div>
+          <img className="brand-logo" src="/brand/farooj-logo-english.png" alt="Farooj Abu Al-Abed" />
           <h1>Pickup-first restaurant operations, without the clutter.</h1>
           <p>
             This internal panel covers cashier confirmation, kitchen flow, branch controls, catalog visibility, and

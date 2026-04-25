@@ -19,7 +19,7 @@ function FrameInner({
     <div className="app-shell">
       <div className="hero-bar">
         <div className="hero-copy">
-          <div className="tag">Abo Al-Abed UAE Platform</div>
+          <img className="brand-logo small" src="/brand/farooj-logo-english.png" alt="Farooj Abu Al-Abed" />
           <h1>{title}</h1>
           <p>{subtitle}</p>
         </div>

@@ -15,8 +15,12 @@ const arabic = IBM_Plex_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: "Abo Al-Abed Ops",
-  description: "Operations and admin cockpit for Abo Al-Abed UAE pickup platform",
+  title: "Farooj Abu Al-Abed Ops",
+  description: "Operations and admin cockpit for Farooj Abu Al-Abed UAE pickup platform",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
