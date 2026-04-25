@@ -5,6 +5,7 @@ protocol APIClient {
     func login(email: String, password: String) async throws -> SessionUser
     func loadHome() async throws -> HomeSnapshot
     func loadAddresses() async throws -> [SavedAddress]
+    func createAddress(label: String, line1: String, line2: String?, city: String, emirate: String, notes: String?, latitude: Double, longitude: Double, isDefault: Bool) async throws -> SavedAddress
     func loadFavoriteIDs() async throws -> [UUID]
     func recommendBranches(for address: SavedAddress) async throws -> BranchRecommendation
     func placeOrder(cartItems: [CartItem], address: SavedAddress, branch: Branch) async throws -> CustomerOrder
@@ -13,14 +14,14 @@ protocol APIClient {
 }
 
 enum APIClientError: LocalizedError {
-    case networkUnavailable
+    case networkUnavailable(String)
     case unauthorized
     case server(String)
 
     var errorDescription: String? {
         switch self {
-        case .networkUnavailable:
-            return "Live backend is not reachable."
+        case .networkUnavailable(let message):
+            return message
         case .unauthorized:
             return "Your session expired. Sign in again."
         case .server(let message):
@@ -37,9 +38,17 @@ final class LiveAPIClient: APIClient {
     private let decoder = JSONDecoder()
     private var accessToken: String?
 
-    init(baseURL: URL, session: URLSession = .shared) {
+    init(baseURL: URL, session: URLSession = LiveAPIClient.makeDefaultSession()) {
         self.baseURL = baseURL
         self.session = session
+    }
+
+    private static func makeDefaultSession() -> URLSession {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 10
+        configuration.timeoutIntervalForResource = 20
+        configuration.waitsForConnectivity = false
+        return URLSession(configuration: configuration)
     }
 
     func login(email: String, password: String) async throws -> SessionUser {
@@ -83,6 +92,39 @@ final class LiveAPIClient: APIClient {
     func loadAddresses() async throws -> [SavedAddress] {
         let response: [AddressResponse] = try await request(path: "/addresses")
         return response.map { $0.toDomain() }
+    }
+
+    func createAddress(
+        label: String,
+        line1: String,
+        line2: String?,
+        city: String,
+        emirate: String,
+        notes: String?,
+        latitude: Double,
+        longitude: Double,
+        isDefault: Bool
+    ) async throws -> SavedAddress {
+        let response: CreatedAddressResponse = try await request(
+            path: "/addresses",
+            method: "POST",
+            body: SaveAddressBody(
+                label: label,
+                line1: line1,
+                line2: line2?.nilIfBlank,
+                city: city,
+                emirate: emirate,
+                notes: notes?.nilIfBlank,
+                lat: latitude,
+                lng: longitude,
+                isDefault: isDefault
+            )
+        )
+        let addresses = try await loadAddresses()
+        guard let address = addresses.first(where: { $0.id == response.id }) else {
+            throw APIClientError.server("The saved address could not be loaded.")
+        }
+        return address
     }
 
     func loadFavoriteIDs() async throws -> [UUID] {
@@ -158,7 +200,7 @@ final class LiveAPIClient: APIClient {
         method: String = "GET",
         authorized: Bool = true
     ) async throws -> Response {
-        try await request(path: path, method: method, body: Optional<Data>.none, authorized: authorized)
+        try await performRequest(path: path, method: method, body: nil, authorized: authorized)
     }
 
     private func request<Response: Decodable, Body: Encodable>(
@@ -168,10 +210,10 @@ final class LiveAPIClient: APIClient {
         authorized: Bool = true
     ) async throws -> Response {
         let data = try encoder.encode(body)
-        return try await request(path: path, method: method, body: data, authorized: authorized)
+        return try await performRequest(path: path, method: method, body: data, authorized: authorized)
     }
 
-    private func request<Response: Decodable>(
+    private func performRequest<Response: Decodable>(
         path: String,
         method: String,
         body: Data?,
@@ -185,10 +227,12 @@ final class LiveAPIClient: APIClient {
             return try decoder.decode(Response.self, from: data)
         } catch let error as APIClientError {
             throw error
+        } catch let error as URLError {
+            throw networkError(from: error)
         } catch let error as DecodingError {
             throw APIClientError.server("Unable to decode API response: \(error.localizedDescription)")
         } catch {
-            throw APIClientError.networkUnavailable
+            throw APIClientError.networkUnavailable("The app could not reach the live backend at \(baseURL.absoluteString).")
         }
     }
 
@@ -205,13 +249,18 @@ final class LiveAPIClient: APIClient {
             try validate(response: response, data: data)
         } catch let error as APIClientError {
             throw error
+        } catch let error as URLError {
+            throw networkError(from: error)
         } catch {
-            throw APIClientError.networkUnavailable
+            throw APIClientError.networkUnavailable("The app could not reach the live backend at \(baseURL.absoluteString).")
         }
     }
 
     private func buildRequest(path: String, method: String, body: Data?, authorized: Bool) throws -> URLRequest {
-        guard let url = URL(string: path, relativeTo: baseURL) else {
+        let base = baseURL.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let relativePath = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+
+        guard let url = URL(string: "\(base)/\(relativePath)") else {
             throw APIClientError.server("Invalid API path: \(path)")
         }
 
@@ -232,7 +281,7 @@ final class LiveAPIClient: APIClient {
 
     private func validate(response: URLResponse, data: Data) throws {
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIClientError.networkUnavailable
+            throw APIClientError.networkUnavailable("The app received an invalid response from \(baseURL.absoluteString).")
         }
 
         guard 200..<300 ~= httpResponse.statusCode else {
@@ -249,6 +298,19 @@ final class LiveAPIClient: APIClient {
             }
 
             throw APIClientError.server("Request failed with status \(httpResponse.statusCode).")
+        }
+    }
+
+    private func networkError(from error: URLError) -> APIClientError {
+        switch error.code {
+        case .notConnectedToInternet, .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed, .networkConnectionLost, .timedOut:
+            return .networkUnavailable(
+                "Unable to reach the live backend at \(baseURL.absoluteString). Make sure the API server is running, then try again."
+            )
+        default:
+            return .networkUnavailable(
+                "The app could not contact the live backend at \(baseURL.absoluteString). \(error.localizedDescription)"
+            )
         }
     }
 }
@@ -280,6 +342,44 @@ struct HybridAPIClient: APIClient {
         }
 
         return try await mock.loadAddresses()
+    }
+
+    func createAddress(
+        label: String,
+        line1: String,
+        line2: String?,
+        city: String,
+        emirate: String,
+        notes: String?,
+        latitude: Double,
+        longitude: Double,
+        isDefault: Bool
+    ) async throws -> SavedAddress {
+        if let address = try? await live.createAddress(
+            label: label,
+            line1: line1,
+            line2: line2,
+            city: city,
+            emirate: emirate,
+            notes: notes,
+            latitude: latitude,
+            longitude: longitude,
+            isDefault: isDefault
+        ) {
+            return address
+        }
+
+        return try await mock.createAddress(
+            label: label,
+            line1: line1,
+            line2: line2,
+            city: city,
+            emirate: emirate,
+            notes: notes,
+            latitude: latitude,
+            longitude: longitude,
+            isDefault: isDefault
+        )
     }
 
     func loadFavoriteIDs() async throws -> [UUID] {
@@ -379,7 +479,7 @@ private struct CategoryResponse: Decodable {
     func toDomain() -> MenuCategory {
         let resolvedTitle = title?.primary ?? titleEn ?? titleAr ?? slug.replacingOccurrences(of: "-", with: " ").capitalized
         let resolvedSubtitle = description?.primary ?? descriptionEn ?? descriptionAr ?? "Pickup-ready selection"
-        return MenuCategory(id: id, title: resolvedTitle, subtitle: resolvedSubtitle)
+        return MenuCategory(id: id, slug: slug, title: resolvedTitle, subtitle: resolvedSubtitle)
     }
 }
 
@@ -396,7 +496,7 @@ private struct ProductResponse: Decodable {
     func toDomain() -> Product {
         Product(
             id: id,
-            categoryID: UUID.deterministic(from: categorySlug),
+            categorySlug: categorySlug,
             name: name.primary,
             detail: description.primary,
             imageURL: URL(string: heroImageUrl),
@@ -459,8 +559,10 @@ private struct AddressResponse: Decodable {
     let id: UUID
     let label: String
     let line1: String
+    let line2: String?
     let city: String
     let emirate: String
+    let notes: String?
     let coordinates: Coordinates
     let isDefault: Bool
 
@@ -469,13 +571,31 @@ private struct AddressResponse: Decodable {
             id: id,
             label: label.capitalized,
             line1: line1,
+            line2: line2,
             city: city,
             emirate: emirate,
+            notes: notes,
             latitude: coordinates.lat,
             longitude: coordinates.lng,
             isDefault: isDefault
         )
     }
+}
+
+private struct CreatedAddressResponse: Decodable {
+    let id: UUID
+}
+
+private struct SaveAddressBody: Encodable {
+    let label: String
+    let line1: String
+    let line2: String?
+    let city: String
+    let emirate: String
+    let notes: String?
+    let lat: Double
+    let lng: Double
+    let isDefault: Bool
 }
 
 private struct BranchRecommendationResponse: Decodable {
@@ -563,8 +683,10 @@ private struct OrderResponse: Decodable {
         let id: UUID
         let label: String
         let line1: String
+        let line2: String?
         let city: String
         let emirate: String
+        let notes: String?
         let coordinates: Coordinates
         let isDefault: Bool
 
@@ -573,8 +695,10 @@ private struct OrderResponse: Decodable {
                 id: id,
                 label: label.capitalized,
                 line1: line1,
+                line2: line2,
                 city: city,
                 emirate: emirate,
+                notes: notes,
                 latitude: coordinates.lat,
                 longitude: coordinates.lng,
                 isDefault: isDefault
@@ -595,7 +719,7 @@ private struct OrderResponse: Decodable {
         func toDomain() -> CartItem {
             let product = Product(
                 id: productId,
-                categoryID: UUID(),
+                categorySlug: "",
                 name: name,
                 detail: "",
                 imageURL: nil,
@@ -652,6 +776,13 @@ private struct OrderResponse: Decodable {
 }
 
 private extension String {
+    var nilIfBlank: String? {
+        let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+}
+
+private extension String {
     var isOpenOrderStatus: Bool {
         switch self {
         case "awaiting_payment", "paid", "in_preparation", "ready_for_pickup":
@@ -699,28 +830,5 @@ private extension String {
         default:
             return replacingOccurrences(of: "_", with: " ").capitalized
         }
-    }
-}
-
-private extension UUID {
-    static func deterministic(from value: String) -> UUID {
-        let bytes = Array(value.utf8)
-        var uuidBytes = [UInt8](repeating: 0, count: 16)
-
-        for (index, byte) in bytes.enumerated() {
-            uuidBytes[index % 16] = uuidBytes[index % 16] &+ byte
-        }
-
-        uuidBytes[6] = (uuidBytes[6] & 0x0F) | 0x40
-        uuidBytes[8] = (uuidBytes[8] & 0x3F) | 0x80
-
-        let uuid = uuid_t(
-            uuidBytes[0], uuidBytes[1], uuidBytes[2], uuidBytes[3],
-            uuidBytes[4], uuidBytes[5], uuidBytes[6], uuidBytes[7],
-            uuidBytes[8], uuidBytes[9], uuidBytes[10], uuidBytes[11],
-            uuidBytes[12], uuidBytes[13], uuidBytes[14], uuidBytes[15]
-        )
-
-        return UUID(uuid: uuid)
     }
 }

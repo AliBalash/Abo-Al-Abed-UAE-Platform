@@ -3,7 +3,19 @@ import Foundation
 @MainActor
 struct MockAPIClient: APIClient {
     func login(email: String, password: String) async throws -> SessionUser {
-        SessionUser(id: UUID(), email: email, roles: email.contains("admin") ? ["super_admin"] : ["cashier", "kitchen_staff"])
+        let roles: [String]
+
+        if email.contains("admin") {
+            roles = ["super_admin"]
+        } else if email.contains("cashier") {
+            roles = ["cashier"]
+        } else if email.contains("kitchen") {
+            roles = ["kitchen_staff"]
+        } else {
+            roles = []
+        }
+
+        return SessionUser(id: UUID(), email: email, roles: roles)
     }
 
     func loadHome() async throws -> HomeSnapshot {
@@ -31,19 +43,19 @@ struct MockAPIClient: APIClient {
         )
 
         let categories = [
-            MenuCategory(id: UUID(), title: "Golden Sandwich", subtitle: "Hero category"),
-            MenuCategory(id: UUID(), title: "New Items", subtitle: "Latest launches"),
-            MenuCategory(id: UUID(), title: "Baby Size", subtitle: "Quick grab"),
-            MenuCategory(id: UUID(), title: "Meals", subtitle: "Full pickup bundles"),
-            MenuCategory(id: UUID(), title: "El-Abodi", subtitle: "Signature line"),
-            MenuCategory(id: UUID(), title: "Appetizers", subtitle: "Sides + sauces"),
-            MenuCategory(id: UUID(), title: "Drinks", subtitle: "Cold pairing")
+            MenuCategory(id: UUID(), slug: "golden-sandwich", title: "Golden Sandwich", subtitle: "Hero category"),
+            MenuCategory(id: UUID(), slug: "new-items", title: "New Items", subtitle: "Latest launches"),
+            MenuCategory(id: UUID(), slug: "baby-size", title: "Baby Size", subtitle: "Quick grab"),
+            MenuCategory(id: UUID(), slug: "meals", title: "Meals", subtitle: "Full pickup bundles"),
+            MenuCategory(id: UUID(), slug: "el-abodi", title: "El-Abodi", subtitle: "Signature line"),
+            MenuCategory(id: UUID(), slug: "appetizers", title: "Appetizers", subtitle: "Sides + sauces"),
+            MenuCategory(id: UUID(), slug: "drinks", title: "Drinks", subtitle: "Cold pairing")
         ]
 
         let products = [
             Product(
                 id: UUID(),
-                categoryID: categories[0].id,
+                categorySlug: categories[0].slug,
                 name: "Golden Chicken Sandwich",
                 detail: "Crispy signature sandwich built for fast self-pickup.",
                 imageURL: URL(string: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=80"),
@@ -56,7 +68,7 @@ struct MockAPIClient: APIClient {
             ),
             Product(
                 id: UUID(),
-                categoryID: categories[4].id,
+                categorySlug: categories[4].slug,
                 name: "El-Abodi Meal",
                 detail: "Loaded meal with fries and drink.",
                 imageURL: URL(string: "https://images.unsplash.com/photo-1562967914-01efa7b7a2b9?auto=format&fit=crop&w=1200&q=80"),
@@ -68,7 +80,7 @@ struct MockAPIClient: APIClient {
             ),
             Product(
                 id: UUID(),
-                categoryID: categories[5].id,
+                categorySlug: categories[5].slug,
                 name: "Loaded Fries",
                 detail: "Crisp fries with signature sauce.",
                 imageURL: URL(string: "https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=1200&q=80"),
@@ -93,9 +105,34 @@ struct MockAPIClient: APIClient {
 
     func loadAddresses() async throws -> [SavedAddress] {
         [
-            SavedAddress(id: UUID(), label: "Home", line1: "Port Saeed Residential Tower", city: "Dubai", emirate: "Dubai", latitude: 25.2665, longitude: 55.3334, isDefault: true),
-            SavedAddress(id: UUID(), label: "Office", line1: "Business Bay Bay Square", city: "Dubai", emirate: "Dubai", latitude: 25.1865, longitude: 55.2787, isDefault: false)
+            SavedAddress(id: UUID(), label: "Home", line1: "Port Saeed Residential Tower", line2: "Apartment 1204", city: "Dubai", emirate: "Dubai", notes: "Call on arrival", latitude: 25.2665, longitude: 55.3334, isDefault: true),
+            SavedAddress(id: UUID(), label: "Office", line1: "Business Bay Bay Square", line2: nil, city: "Dubai", emirate: "Dubai", notes: nil, latitude: 25.1865, longitude: 55.2787, isDefault: false)
         ]
+    }
+
+    func createAddress(
+        label: String,
+        line1: String,
+        line2: String?,
+        city: String,
+        emirate: String,
+        notes: String?,
+        latitude: Double,
+        longitude: Double,
+        isDefault: Bool
+    ) async throws -> SavedAddress {
+        SavedAddress(
+            id: UUID(),
+            label: label,
+            line1: line1,
+            line2: line2,
+            city: city,
+            emirate: emirate,
+            notes: notes,
+            latitude: latitude,
+            longitude: longitude,
+            isDefault: isDefault
+        )
     }
 
     func loadFavoriteIDs() async throws -> [UUID] { [] }

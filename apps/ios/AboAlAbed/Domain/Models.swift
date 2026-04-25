@@ -11,8 +11,10 @@ struct SavedAddress: Codable, Identifiable, Hashable {
     let id: UUID
     let label: String
     let line1: String
+    let line2: String?
     let city: String
     let emirate: String
+    let notes: String?
     let latitude: Double
     let longitude: Double
     let isDefault: Bool
@@ -31,6 +33,7 @@ struct HomeBanner: Identifiable, Hashable {
 
 struct MenuCategory: Identifiable, Hashable {
     let id: UUID
+    let slug: String
     let title: String
     let subtitle: String
 }
@@ -58,7 +61,7 @@ struct ProductVariant: Identifiable, Hashable {
 
 struct Product: Identifiable, Hashable {
     let id: UUID
-    let categoryID: UUID
+    let categorySlug: String
     let name: String
     let detail: String
     let imageURL: URL?

@@ -27,25 +27,48 @@ final class AppModel: ObservableObject {
     func login(email: String, password: String) async {
         errorMessage = nil
         isBusy = true
-        defer { isBusy = false }
 
         do {
             let result = try await environment.apiClient.login(email: email, password: password)
             session = result
-            savedAddresses = try await environment.apiClient.loadAddresses()
-            selectedAddress = savedAddresses.first(where: \.isDefault) ?? savedAddresses.first
-            home = try await environment.apiClient.loadHome()
-            favoriteIDs = Set(try await environment.apiClient.loadFavoriteIDs())
-            activeOrder = try await environment.apiClient.loadActiveOrder()
-
-            if let selectedAddress {
-                let recommendation = try await environment.apiClient.recommendBranches(for: selectedAddress)
-                branchRecommendation = recommendation
-                selectedBranch = recommendation.primary
-            }
+            await loadBootstrapData()
         } catch {
+            isBusy = false
+            session = nil
+            savedAddresses = []
+            selectedAddress = nil
+            home = .empty
+            favoriteIDs = []
+            branchRecommendation = nil
+            selectedBranch = nil
+            activeOrder = nil
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func loadBootstrapData() async {
+        let addresses = (try? await environment.apiClient.loadAddresses()) ?? []
+        let homeSnapshot = (try? await environment.apiClient.loadHome()) ?? .empty
+        let favorites = (try? await environment.apiClient.loadFavoriteIDs()) ?? []
+        let order = try? await environment.apiClient.loadActiveOrder()
+        let defaultAddress = addresses.first(where: \.isDefault) ?? addresses.first
+
+        savedAddresses = addresses
+        selectedAddress = defaultAddress
+        home = homeSnapshot
+        favoriteIDs = Set(favorites)
+        activeOrder = order
+
+        if let defaultAddress {
+            let recommendation = try? await environment.apiClient.recommendBranches(for: defaultAddress)
+            branchRecommendation = recommendation
+            selectedBranch = recommendation?.primary
+        } else {
+            branchRecommendation = nil
+            selectedBranch = nil
+        }
+
+        isBusy = false
     }
 
     func selectAddress(_ address: SavedAddress) async {
@@ -57,6 +80,42 @@ final class AppModel: ObservableObject {
             selectedBranch = recommendation.primary
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    func addAddress(
+        label: String,
+        line1: String,
+        line2: String?,
+        city: String,
+        emirate: String,
+        notes: String?,
+        latitude: Double,
+        longitude: Double,
+        isDefault: Bool
+    ) async -> Bool {
+        errorMessage = nil
+        isBusy = true
+        defer { isBusy = false }
+
+        do {
+            let address = try await environment.apiClient.createAddress(
+                label: label,
+                line1: line1,
+                line2: line2,
+                city: city,
+                emirate: emirate,
+                notes: notes,
+                latitude: latitude,
+                longitude: longitude,
+                isDefault: isDefault
+            )
+            savedAddresses = try await environment.apiClient.loadAddresses()
+            await selectAddress(address)
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
         }
     }
 
