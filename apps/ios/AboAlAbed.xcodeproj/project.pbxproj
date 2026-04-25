@@ -16,6 +16,7 @@
 		6C8A2AB54C6F2C77E77AFBAA /* AddressPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3965DFFE4ACAEB888A8D383A /* AddressPickerView.swift */; };
 		9022EC2E71C1F5C62828F4F2 /* ProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4874F21C4EAB2AA65F400765 /* ProductDetailView.swift */; };
 		90760257E2F4431AAD52129D /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5A018F1169A75504CF564A /* APIClient.swift */; };
+		97725EBD9B1ECF019AD72EC0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7826D3AB293FB84560574D9B /* Assets.xcassets */; };
 		99D57472EDA46BDC91446079 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299CBD3A705F924EF5AC3AB4 /* AppModel.swift */; };
 		AA9F9D103C8675A78A9F8F62 /* OrderTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D22288CF70BD01068E04C0 /* OrderTrackingView.swift */; };
 		ACBED48173AB417CE7D569C3 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1977F0EE992E9F67896F62 /* AppModelTests.swift */; };
@@ -48,6 +49,7 @@
 		43CC48B6FA2ACFA1ECBDC45C /* BranchSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchSelectionView.swift; sourceTree = "<group>"; };
 		4874F21C4EAB2AA65F400765 /* ProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailView.swift; sourceTree = "<group>"; };
 		4F1977F0EE992E9F67896F62 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
+		7826D3AB293FB84560574D9B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7C5A018F1169A75504CF564A /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		8592E04CAFB9C87BAC70C6B3 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		AEEAF29E416EAF4394CB87F6 /* AboAlAbed.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AboAlAbed.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +80,7 @@
 				3958AE73BAA1D21E9436CD56 /* DesignSystem */,
 				7FA6EFBCBA0F6567CD89299D /* Domain */,
 				72F652AF513C2E1792DC0A78 /* Features */,
+				7F7682B433644A0BB6F73B85 /* Resources */,
 			);
 			path = AboAlAbed;
 			sourceTree = "<group>";
@@ -135,6 +138,14 @@
 				DDA3AFEC5E316EC7CE4A7407 /* Product */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		7F7682B433644A0BB6F73B85 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7826D3AB293FB84560574D9B /* Assets.xcassets */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		7FA6EFBCBA0F6567CD89299D /* Domain */ = {
@@ -223,13 +234,6 @@
 			path = BranchSelection;
 			sourceTree = "<group>";
 		};
-		"TEMP_86BE2152-5459-41D0-AA0B-9A113026D9DB" /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -256,6 +260,7 @@
 			buildConfigurationList = 585CD06A99554B4C2B401913 /* Build configuration list for PBXNativeTarget "AboAlAbed" */;
 			buildPhases = (
 				E7AC4220DD6561A1A029CA84 /* Sources */,
+				5044E0521E1B17AF78C38F91 /* Resources */,
 				0707972CA1A1917BBC84B418 /* Frameworks */,
 			);
 			buildRules = (
@@ -297,6 +302,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5044E0521E1B17AF78C38F91 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				97725EBD9B1ECF019AD72EC0 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3F533FD3D3828D4FA90E923B /* Sources */ = {
@@ -463,7 +479,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Abo Al-Abed";
+				INFOPLIST_KEY_CFBundleDisplayName = "Farooj Abo Al-Abed";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -487,7 +503,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Abo Al-Abed";
+				INFOPLIST_KEY_CFBundleDisplayName = "Farooj Abo Al-Abed";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -13,12 +13,13 @@ struct AuthView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Abo Al-Abed UAE")
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(.white.opacity(0.18), in: Capsule())
-                        Text("Pickup-first food ordering with a sharper flow than generic fast-food apps.")
+                        Image("FaroojLogoEnglish")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: 220)
+                            .padding(14)
+                            .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
+                        Text("Pickup-first Farooj ordering with a sharper flow.")
                             .font(.system(size: 36, weight: .bold, design: .rounded))
                             .foregroundStyle(.white)
                         Text("Login with email, lock your address, browse categories, and show your order code at pickup.")
@@ -40,6 +41,15 @@ struct AuthView: View {
                                 .background(Color.white, in: RoundedRectangle(cornerRadius: 18))
                         }
 
+                        if let errorMessage = model.errorMessage {
+                            Text(errorMessage)
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(Color.red.opacity(0.9))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(14)
+                                .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+                        }
+
                         Button {
                             Task { await model.login(email: email, password: password) }
                         } label: {
@@ -53,6 +63,8 @@ struct AuthView: View {
                             .background(Color.black.opacity(0.82), in: RoundedRectangle(cornerRadius: 18))
                             .foregroundStyle(.white)
                         }
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.72 : 1)
                     }
                     .padding(24)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
