@@ -12,10 +12,22 @@ struct ProductDetailView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    AsyncImage(url: product.imageURL) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        BrandTheme.panelGradient
+                    AsyncImage(url: product.imageURL) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().scaledToFill()
+                        case .failure:
+                            Image(systemName: "photo")
+                                .font(.largeTitle)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(BrandTheme.panelGradient)
+                        default:
+                            ZStack {
+                                BrandTheme.panelGradient
+                                ProgressView()
+                            }
+                        }
                     }
                     .frame(height: 280)
                     .clipShape(RoundedRectangle(cornerRadius: 30))

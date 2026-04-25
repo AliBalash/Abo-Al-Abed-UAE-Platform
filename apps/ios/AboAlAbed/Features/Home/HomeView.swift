@@ -5,22 +5,41 @@ struct HomeView: View {
     @State private var selectedProduct: Product?
     @State private var isAddressSheetPresented = false
     @State private var isCartPresented = false
+    @State private var selectedCategorySlug: String?
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                addressBar
-                banners
-                categories
-                productSection(title: "Featured Menu", subtitle: "Built from your Abo Al-Abed source categories.", products: model.home.featured)
-                productSection(title: "Recommended for Pickup", subtitle: "Fast-prep items for a smooth in-branch journey.", products: model.home.recommendations)
+            if model.home.featured.isEmpty && model.home.recommendations.isEmpty && model.isBusy {
+                VStack(spacing: 14) {
+                    ProgressView()
+                        .scaleEffect(1.25)
+                    ContentUnavailableView(
+                        "Preparing Menu",
+                        systemImage: "fork.knife.circle",
+                        description: Text("Loading your menu, saved address, and pickup branch.")
+                    )
+                }
+                .padding(.top, 100)
+            } else {
+                VStack(alignment: .leading, spacing: 20) {
+                    addressBar
+                    banners
+                    categories
+                    productSection(title: selectedCategoryTitle, subtitle: selectedCategorySubtitle, products: filteredProducts)
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
         }
         .background(BrandTheme.cream.ignoresSafeArea())
         .navigationTitle("Menu")
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Image("FaroojLogoEnglish")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 96, height: 34)
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     isCartPresented = true
@@ -109,21 +128,67 @@ struct HomeView: View {
                 .font(.title3.bold())
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
+                    categoryFilterButton(title: "All", subtitle: "\(allProducts.count) items", slug: nil)
                     ForEach(model.home.categories) { category in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(category.title)
-                                .font(.headline)
-                            Text(category.subtitle)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(16)
-                        .frame(width: 180, alignment: .leading)
-                        .background(Color.white, in: RoundedRectangle(cornerRadius: 22))
+                        let count = allProducts.filter { $0.categorySlug == category.slug }.count
+                        categoryFilterButton(title: category.title, subtitle: count == 1 ? "1 item" : "\(count) items", slug: category.slug)
                     }
                 }
             }
         }
+    }
+
+    private func categoryFilterButton(title: String, subtitle: String, slug: String?) -> some View {
+        let isSelected = selectedCategorySlug == slug
+
+        return Button {
+            selectedCategorySlug = slug
+        } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(isSelected ? .white : .primary)
+                    .lineLimit(2)
+                Text(subtitle)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
+            }
+            .padding(16)
+            .frame(width: 180, alignment: .leading)
+            .frame(minHeight: 86)
+            .background(isSelected ? BrandTheme.brand : Color.white, in: RoundedRectangle(cornerRadius: 22))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var allProducts: [Product] {
+        var seen = Set<UUID>()
+        return (model.home.featured + model.home.recommendations).filter { product in
+            guard !seen.contains(product.id) else { return false }
+            seen.insert(product.id)
+            return true
+        }
+    }
+
+    private var filteredProducts: [Product] {
+        guard let selectedCategorySlug else { return allProducts }
+        return allProducts.filter { $0.categorySlug == selectedCategorySlug }
+    }
+
+    private var selectedCategoryTitle: String {
+        guard let selectedCategorySlug,
+              let category = model.home.categories.first(where: { $0.slug == selectedCategorySlug })
+        else { return "All Menu" }
+
+        return category.title
+    }
+
+    private var selectedCategorySubtitle: String {
+        guard let selectedCategorySlug,
+              let category = model.home.categories.first(where: { $0.slug == selectedCategorySlug })
+        else { return "Filter the complete menu by category." }
+
+        return category.subtitle
     }
 
     private func productSection(title: String, subtitle: String, products: [Product]) -> some View {
@@ -134,55 +199,76 @@ struct HomeView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            ForEach(products) { product in
-                HStack(spacing: 16) {
-                    AsyncImage(url: product.imageURL) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } placeholder: {
-                        BrandTheme.panelGradient
-                    }
-                    .frame(width: 118, height: 110)
-                    .clipShape(RoundedRectangle(cornerRadius: 22))
+            if products.isEmpty {
+                ContentUnavailableView(
+                    "No items in this category",
+                    systemImage: "fork.knife",
+                    description: Text("Choose another menu category.")
+                )
+                .padding(.vertical, 24)
+            } else {
+                ForEach(products) { product in
+                    HStack(spacing: 16) {
+                        AsyncImage(url: product.imageURL) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            case .failure:
+                                Image(systemName: "photo")
+                                    .font(.title2)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .background(BrandTheme.panelGradient)
+                            default:
+                                ZStack {
+                                    BrandTheme.panelGradient
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .frame(width: 118, height: 110)
+                        .clipShape(RoundedRectangle(cornerRadius: 22))
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(product.name)
-                                .font(.headline)
-                            Spacer()
-                            Button {
-                                model.toggleFavorite(for: product.id)
-                            } label: {
-                                Image(systemName: model.favoriteIDs.contains(product.id) ? "heart.fill" : "heart")
-                                    .foregroundStyle(BrandTheme.brand)
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text(product.name)
+                                    .font(.headline)
+                                Spacer()
+                                Button {
+                                    model.toggleFavorite(for: product.id)
+                                } label: {
+                                    Image(systemName: model.favoriteIDs.contains(product.id) ? "heart.fill" : "heart")
+                                        .foregroundStyle(BrandTheme.brand)
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
-                        }
-                        Text(product.detail)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
-                        HStack {
-                            Text("AED \(product.variants.first?.price ?? 0, specifier: "%.0f")")
-                                .font(.subheadline.bold())
-                            Spacer()
-                            ForEach(product.tags.prefix(2), id: \.self) { tag in
-                                Text(tag)
-                                    .font(.caption2.weight(.semibold))
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 6)
-                                    .background(BrandTheme.sand, in: Capsule())
+                            Text(product.detail)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                            HStack {
+                                Text("AED \(product.variants.first?.price ?? 0, specifier: "%.0f")")
+                                    .font(.subheadline.bold())
+                                Spacer()
+                                ForEach(product.tags.prefix(2), id: \.self) { tag in
+                                    Text(tag)
+                                        .font(.caption2.weight(.semibold))
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 6)
+                                        .background(BrandTheme.sand, in: Capsule())
+                                }
                             }
                         }
                     }
-                }
-                .padding(14)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 28))
-                .shadow(color: BrandTheme.brand.opacity(0.08), radius: 18, y: 10)
-                .contentShape(RoundedRectangle(cornerRadius: 28))
-                .onTapGesture {
-                    selectedProduct = product
+                    .padding(14)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 28))
+                    .shadow(color: BrandTheme.brand.opacity(0.08), radius: 18, y: 10)
+                    .contentShape(RoundedRectangle(cornerRadius: 28))
+                    .onTapGesture {
+                        selectedProduct = product
+                    }
                 }
             }
         }
@@ -240,6 +326,9 @@ struct AccountView: View {
                     VStack(alignment: .leading) {
                         Text(address.label).bold()
                         Text(address.line1).font(.subheadline).foregroundStyle(.secondary)
+                        if let line2 = address.line2, !line2.isEmpty {
+                            Text(line2).font(.caption).foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
