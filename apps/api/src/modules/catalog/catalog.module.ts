@@ -1,17 +1,19 @@
-import { Controller, Delete, Get, Injectable, Module, Param, Post, Query } from "@nestjs/common";
+import { Controller, Delete, Get, Injectable, Module, Param, Post, Query, Req } from "@nestjs/common";
 import { ProductStatus } from "@prisma/client";
+import type { Request } from "express";
 
 import { CurrentUser } from "../../common/current-user.decorator";
 import type { AuthenticatedUser } from "../../common/authenticated-user.interface";
 import { buildMoney, decimalToNumber } from "../../common/mappers";
 import { Public } from "../../common/public.decorator";
+import { publicAssetBaseUrlFromRequest, resolvePublicAssetUrl } from "../../common/public-asset-url";
 import { PrismaService } from "../../database/prisma.service";
 
 @Injectable()
 class CatalogService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async home(userId?: string) {
+  async home(userId?: string, assetBaseUrl?: string) {
     const [banners, categories, featuredProducts, announcement] = await Promise.all([
       this.prisma.homeBanner.findMany({
         where: { isActive: true },
@@ -32,14 +34,14 @@ class CatalogService {
       }),
     ]);
 
-    const favorites = userId ? await this.listFavorites(userId) : [];
+    const favorites = userId ? await this.listFavorites(userId, assetBaseUrl) : [];
 
     return {
       banners: banners.map((banner) => ({
         id: banner.id,
         title: { en: banner.titleEn, ar: banner.titleAr },
         subtitle: { en: banner.subtitleEn, ar: banner.subtitleAr },
-        imageUrl: banner.imageUrl,
+        imageUrl: resolvePublicAssetUrl(banner.imageUrl, assetBaseUrl),
         ctaLabel: { en: banner.ctaLabelEn, ar: banner.ctaLabelAr },
         ctaTarget: banner.ctaTarget,
         theme: banner.theme,
@@ -54,7 +56,7 @@ class CatalogService {
         },
         displayOrder: category.displayOrder,
       })),
-      featuredProducts: featuredProducts.map((product) => this.mapProduct(product)),
+      featuredProducts: featuredProducts.map((product) => this.mapProduct(product, assetBaseUrl)),
       favorites,
       announcement: announcement
         ? {
@@ -72,7 +74,7 @@ class CatalogService {
     });
   }
 
-  async products(search?: string, category?: string) {
+  async products(search?: string, category?: string, assetBaseUrl?: string) {
     const products = await this.prisma.product.findMany({
       where: {
         status: ProductStatus.ACTIVE,
@@ -88,19 +90,19 @@ class CatalogService {
       orderBy: { nameEn: "asc" },
     });
 
-    return products.map((product) => this.mapProduct(product));
+    return products.map((product) => this.mapProduct(product, assetBaseUrl));
   }
 
-  async product(slug: string) {
+  async product(slug: string, assetBaseUrl?: string) {
     const product = await this.prisma.product.findUniqueOrThrow({
       where: { slug },
       include: this.productInclude(),
     });
 
-    return this.mapProduct(product);
+    return this.mapProduct(product, assetBaseUrl);
   }
 
-  async listFavorites(userId: string) {
+  async listFavorites(userId: string, assetBaseUrl?: string) {
     const favorites = await this.prisma.favorite.findMany({
       where: { customerId: userId },
       include: {
@@ -110,7 +112,7 @@ class CatalogService {
       },
     });
 
-    return favorites.map((favorite) => this.mapProduct(favorite.product));
+    return favorites.map((favorite) => this.mapProduct(favorite.product, assetBaseUrl));
   }
 
   async favorite(userId: string, productId: string) {
@@ -202,14 +204,14 @@ class CatalogService {
     };
   }
 
-  private mapProduct(product: any) {
+  private mapProduct(product: any, assetBaseUrl?: string) {
     return {
       id: product.id,
       slug: product.slug,
       name: { en: product.nameEn, ar: product.nameAr },
       description: { en: product.descriptionEn, ar: product.descriptionAr },
       categorySlug: product.category.slug,
-      heroImageUrl: this.resolveAssetUrl(product.images[0]?.url ?? ""),
+      heroImageUrl: resolvePublicAssetUrl(product.images[0]?.url ?? "", assetBaseUrl),
       tags: product.productTags.map((tagLink: any) => tagLink.tag.code),
       isFeatured: product.isFeatured,
       variants: product.variants.map((variant: any) => ({
@@ -234,14 +236,6 @@ class CatalogService {
     };
   }
 
-  private resolveAssetUrl(url: string) {
-    if (!url.startsWith("/")) {
-      return url;
-    }
-
-    const baseURL = process.env.PUBLIC_ASSET_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? 4000}`;
-    return `${baseURL.replace(/\/$/, "")}${url}`;
-  }
 }
 
 @Controller("catalog")
@@ -250,8 +244,8 @@ class CatalogController {
 
   @Public()
   @Get("home")
-  home(@CurrentUser() user?: AuthenticatedUser) {
-    return this.catalogService.home(user?.id);
+  home(@CurrentUser() user: AuthenticatedUser | undefined, @Req() request: Request) {
+    return this.catalogService.home(user?.id, publicAssetBaseUrlFromRequest(request));
   }
 
   @Public()
@@ -262,19 +256,19 @@ class CatalogController {
 
   @Public()
   @Get("products")
-  products(@Query("search") search?: string, @Query("category") category?: string) {
-    return this.catalogService.products(search, category);
+  products(@Query("search") search: string | undefined, @Query("category") category: string | undefined, @Req() request: Request) {
+    return this.catalogService.products(search, category, publicAssetBaseUrlFromRequest(request));
   }
 
   @Public()
   @Get("products/:slug")
-  product(@Param("slug") slug: string) {
-    return this.catalogService.product(slug);
+  product(@Param("slug") slug: string, @Req() request: Request) {
+    return this.catalogService.product(slug, publicAssetBaseUrlFromRequest(request));
   }
 
   @Get("favorites")
-  favorites(@CurrentUser() user: AuthenticatedUser) {
-    return this.catalogService.listFavorites(user.id);
+  favorites(@CurrentUser() user: AuthenticatedUser, @Req() request: Request) {
+    return this.catalogService.listFavorites(user.id, publicAssetBaseUrlFromRequest(request));
   }
 
   @Post("favorites/:productId")

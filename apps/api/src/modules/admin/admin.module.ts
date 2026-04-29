@@ -9,8 +9,10 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from "@nestjs/common";
 import { AvailabilityStatus, OrderStatus, Prisma, ProductStatus, UserStatus } from "@prisma/client";
+import type { Request } from "express";
 import {
   IsBoolean,
   IsEnum,
@@ -28,6 +30,7 @@ import type { AuthenticatedUser } from "../../common/authenticated-user.interfac
 import { Roles } from "../../common/roles.decorator";
 import { AuditService } from "../audit/audit.module";
 import { buildMoney, decimalToNumber } from "../../common/mappers";
+import { publicAssetBaseUrlFromRequest, resolvePublicAssetUrl } from "../../common/public-asset-url";
 import { PrismaService } from "../../database/prisma.service";
 import { AuditModule } from "../audit/audit.module";
 
@@ -300,7 +303,7 @@ class AdminService {
     return category;
   }
 
-  async catalog(categoryId?: string, status?: ProductStatus | "ALL") {
+  async catalog(categoryId?: string, status?: ProductStatus | "ALL", assetBaseUrl?: string) {
     const products = await this.prisma.product.findMany({
       where: {
         categoryId: categoryId || undefined,
@@ -317,10 +320,10 @@ class AdminService {
       orderBy: [{ category: { displayOrder: "asc" } }, { nameEn: "asc" }],
     });
 
-    return products.map((product) => this.mapProduct(product));
+    return products.map((product) => this.mapProduct(product, assetBaseUrl));
   }
 
-  async createProduct(actor: AuthenticatedUser, dto: SaveProductDto) {
+  async createProduct(actor: AuthenticatedUser, dto: SaveProductDto, assetBaseUrl?: string) {
     const product = await this.prisma.product.create({
       data: {
         categoryId: dto.categoryId,
@@ -355,10 +358,10 @@ class AdminService {
     });
     await this.syncTags(product.id, dto.tagsCsv);
     await this.audit(actor, "product.created", "product", product.id, { slug: product.slug });
-    return this.productById(product.id);
+    return this.productById(product.id, assetBaseUrl);
   }
 
-  async updateProduct(actor: AuthenticatedUser, productId: string, dto: Partial<SaveProductDto>) {
+  async updateProduct(actor: AuthenticatedUser, productId: string, dto: Partial<SaveProductDto>, assetBaseUrl?: string) {
     await this.prisma.product.update({
       where: { id: productId },
       data: {
@@ -387,7 +390,7 @@ class AdminService {
     }
 
     await this.audit(actor, "product.updated", "product", productId, dto);
-    return this.productById(productId);
+    return this.productById(productId, assetBaseUrl);
   }
 
   async createVariant(actor: AuthenticatedUser, productId: string, dto: SaveVariantDto) {
@@ -422,8 +425,12 @@ class AdminService {
     return variant;
   }
 
-  async banners() {
-    return this.prisma.homeBanner.findMany({ orderBy: { displayOrder: "asc" } });
+  async banners(assetBaseUrl?: string) {
+    const banners = await this.prisma.homeBanner.findMany({ orderBy: { displayOrder: "asc" } });
+    return banners.map((banner) => ({
+      ...banner,
+      imageUrl: resolvePublicAssetUrl(banner.imageUrl, assetBaseUrl),
+    }));
   }
 
   async updateBanner(actor: AuthenticatedUser, bannerId: string, dto: UpdateBannerDto) {
@@ -525,7 +532,7 @@ class AdminService {
     return availability;
   }
 
-  private async productById(productId: string) {
+  private async productById(productId: string, assetBaseUrl?: string) {
     const product = await this.prisma.product.findUnique({
       where: { id: productId },
       include: {
@@ -537,10 +544,10 @@ class AdminService {
         modifierLinks: { include: { modifierGroup: { include: { options: true } } } },
       },
     });
-    return product ? this.mapProduct(product) : null;
+    return product ? this.mapProduct(product, assetBaseUrl) : null;
   }
 
-  private mapProduct(product: any) {
+  private mapProduct(product: any, assetBaseUrl?: string) {
     const primaryImage = product.images?.find((image: any) => image.isPrimary) ?? product.images?.[0];
     return {
       id: product.id,
@@ -554,7 +561,7 @@ class AdminService {
       categoryId: product.categoryId,
       category: product.category?.titleEn,
       categorySlug: product.category?.slug,
-      imageUrl: primaryImage?.url ? this.resolveAssetUrl(primaryImage.url) : null,
+      imageUrl: primaryImage?.url ? resolvePublicAssetUrl(primaryImage.url, assetBaseUrl) : null,
       tags: product.productTags?.map((link: any) => link.tag.labelEn) ?? [],
       variants: (product.variants ?? []).map((variant: any) => ({
         id: variant.id,
@@ -611,14 +618,6 @@ class AdminService {
     await this.auditService.log(actor.id, action, entityType, entityId, metadata as any);
   }
 
-  private resolveAssetUrl(url: string) {
-    if (!url.startsWith("/")) {
-      return url;
-    }
-
-    const baseURL = process.env.PUBLIC_ASSET_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? 4000}`;
-    return `${baseURL.replace(/\/$/, "")}${url}`;
-  }
 }
 
 @Controller("admin")
@@ -663,20 +662,25 @@ class AdminController {
 
   @Roles("super_admin", "ops_manager", "branch_manager")
   @Get("catalog")
-  catalog(@Query("categoryId") categoryId?: string, @Query("status") status?: ProductStatus | "ALL") {
-    return this.adminService.catalog(categoryId, status);
+  catalog(@Query("categoryId") categoryId: string | undefined, @Query("status") status: ProductStatus | "ALL" | undefined, @Req() request: Request) {
+    return this.adminService.catalog(categoryId, status, publicAssetBaseUrlFromRequest(request));
   }
 
   @Roles("super_admin", "ops_manager")
   @Post("products")
-  createProduct(@CurrentUser() user: AuthenticatedUser, @Body() dto: SaveProductDto) {
-    return this.adminService.createProduct(user, dto);
+  createProduct(@CurrentUser() user: AuthenticatedUser, @Body() dto: SaveProductDto, @Req() request: Request) {
+    return this.adminService.createProduct(user, dto, publicAssetBaseUrlFromRequest(request));
   }
 
   @Roles("super_admin", "ops_manager")
   @Patch("products/:productId")
-  updateProduct(@CurrentUser() user: AuthenticatedUser, @Param("productId") productId: string, @Body() dto: SaveProductDto) {
-    return this.adminService.updateProduct(user, productId, dto);
+  updateProduct(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param("productId") productId: string,
+    @Body() dto: SaveProductDto,
+    @Req() request: Request,
+  ) {
+    return this.adminService.updateProduct(user, productId, dto, publicAssetBaseUrlFromRequest(request));
   }
 
   @Roles("super_admin", "ops_manager")
@@ -693,8 +697,8 @@ class AdminController {
 
   @Roles("super_admin", "ops_manager")
   @Get("banners")
-  banners() {
-    return this.adminService.banners();
+  banners(@Req() request: Request) {
+    return this.adminService.banners(publicAssetBaseUrlFromRequest(request));
   }
 
   @Roles("super_admin", "ops_manager")
