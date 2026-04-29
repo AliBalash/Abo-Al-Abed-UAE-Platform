@@ -7,6 +7,7 @@ protocol APIClient {
     func loadAddresses() async throws -> [SavedAddress]
     func createAddress(label: String, line1: String, line2: String?, city: String, emirate: String, notes: String?, latitude: Double, longitude: Double, isDefault: Bool) async throws -> SavedAddress
     func loadFavoriteIDs() async throws -> [UUID]
+    func setFavorite(productID: UUID, isFavorite: Bool) async throws
     func recommendBranches(for address: SavedAddress) async throws -> BranchRecommendation
     func placeOrder(cartItems: [CartItem], address: SavedAddress, branch: Branch) async throws -> CustomerOrder
     func loadActiveOrder() async throws -> CustomerOrder?
@@ -130,6 +131,13 @@ final class LiveAPIClient: APIClient {
     func loadFavoriteIDs() async throws -> [UUID] {
         let response: [ProductResponse] = try await request(path: "/catalog/favorites")
         return response.map(\.id)
+    }
+
+    func setFavorite(productID: UUID, isFavorite: Bool) async throws {
+        try await requestWithoutResponse(
+            path: "/catalog/favorites/\(productID.uuidString)",
+            method: isFavorite ? "POST" : "DELETE"
+        )
     }
 
     func recommendBranches(for address: SavedAddress) async throws -> BranchRecommendation {
@@ -388,6 +396,14 @@ struct HybridAPIClient: APIClient {
         }
 
         return try await mock.loadFavoriteIDs()
+    }
+
+    func setFavorite(productID: UUID, isFavorite: Bool) async throws {
+        if (try? await live.setFavorite(productID: productID, isFavorite: isFavorite)) != nil {
+            return
+        }
+
+        try await mock.setFavorite(productID: productID, isFavorite: isFavorite)
     }
 
     func recommendBranches(for address: SavedAddress) async throws -> BranchRecommendation {

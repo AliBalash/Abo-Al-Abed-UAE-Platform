@@ -137,6 +137,8 @@ struct MockAPIClient: APIClient {
 
     func loadFavoriteIDs() async throws -> [UUID] { [] }
 
+    func setFavorite(productID: UUID, isFavorite: Bool) async throws {}
+
     func recommendBranches(for address: SavedAddress) async throws -> BranchRecommendation {
         let primary = Branch(
             id: UUID(),
