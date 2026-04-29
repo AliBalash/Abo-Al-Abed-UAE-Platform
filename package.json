@@ -12,7 +12,11 @@
     "db:generate": "pnpm --filter @abo-al-abed/api prisma generate",
     "db:migrate": "pnpm --filter @abo-al-abed/api prisma migrate dev",
     "db:seed": "pnpm --filter @abo-al-abed/api prisma db seed",
-    "ios:project": "cd apps/ios && xcodegen generate"
+    "ios:project": "cd apps/ios && xcodegen generate",
+    "android:build": "cd apps/android && ./gradlew :app:assembleDebug",
+    "android:test": "cd apps/android && ./gradlew :app:testDebugUnitTest",
+    "android:lint": "cd apps/android && ./gradlew :app:lintDebug",
+    "android:studio": "open -a \"Android Studio\" apps/android"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

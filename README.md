@@ -5,6 +5,7 @@ Monorepo for the self-pickup ordering ecosystem:
 - `apps/api`: NestJS backend with Prisma/PostgreSQL contracts
 - `apps/web`: Next.js operations and admin web app
 - `apps/ios`: SwiftUI iPhone client scaffold generated via XcodeGen
+- `apps/android`: Native Kotlin/Jetpack Compose customer app
 - `packages/contracts`: shared API schemas and domain types
 - `packages/ui`: shared web design tokens and presentational helpers
 
@@ -42,6 +43,16 @@ pnpm dev
 ```bash
 pnpm ios:project
 ```
+
+7. Build or open the Android app:
+
+```bash
+pnpm android:build
+pnpm android:studio
+```
+
+For Google Maps, copy `apps/android/secrets.defaults.properties` to
+`apps/android/secrets.properties` and set `MAPS_API_KEY`.
 
 ## Product coverage
 
