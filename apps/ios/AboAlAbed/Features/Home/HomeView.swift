@@ -237,7 +237,9 @@ struct HomeView: View {
                                     .font(.headline)
                                 Spacer()
                                 Button {
-                                    model.toggleFavorite(for: product.id)
+                                    Task {
+                                        await model.toggleFavorite(for: product.id)
+                                    }
                                 } label: {
                                     Image(systemName: model.favoriteIDs.contains(product.id) ? "heart.fill" : "heart")
                                         .foregroundStyle(BrandTheme.brand)
@@ -278,14 +280,35 @@ struct HomeView: View {
 struct FavoritesView: View {
     @EnvironmentObject private var model: AppModel
 
+    private var favoriteProducts: [Product] {
+        var seen = Set<UUID>()
+        return (model.home.featured + model.home.recommendations)
+            .filter { product in
+                guard model.favoriteIDs.contains(product.id), !seen.contains(product.id) else {
+                    return false
+                }
+                seen.insert(product.id)
+                return true
+            }
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                ForEach(model.home.featured.filter { model.favoriteIDs.contains($0.id) }) { product in
-                    Text(product.name)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                        .background(Color.white, in: RoundedRectangle(cornerRadius: 18))
+                if favoriteProducts.isEmpty {
+                    ContentUnavailableView(
+                        "No favorites yet",
+                        systemImage: "heart",
+                        description: Text("Save menu items from the Menu tab to keep them synced here.")
+                    )
+                    .padding(.top, 80)
+                } else {
+                    ForEach(favoriteProducts) { product in
+                        Text(product.name)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                            .background(Color.white, in: RoundedRectangle(cornerRadius: 18))
+                    }
                 }
             }
             .padding()

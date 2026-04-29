@@ -119,11 +119,25 @@ final class AppModel: ObservableObject {
         }
     }
 
-    func toggleFavorite(for productID: UUID) {
-        if favoriteIDs.contains(productID) {
+    func toggleFavorite(for productID: UUID) async {
+        errorMessage = nil
+
+        let wasFavorite = favoriteIDs.contains(productID)
+        if wasFavorite {
             favoriteIDs.remove(productID)
         } else {
             favoriteIDs.insert(productID)
+        }
+
+        do {
+            try await environment.apiClient.setFavorite(productID: productID, isFavorite: !wasFavorite)
+        } catch {
+            if wasFavorite {
+                favoriteIDs.insert(productID)
+            } else {
+                favoriteIDs.remove(productID)
+            }
+            errorMessage = error.localizedDescription
         }
     }
 

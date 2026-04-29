@@ -94,6 +94,8 @@ private struct StubAPIClient: APIClient {
         try favoriteIDsResult.get()
     }
 
+    func setFavorite(productID: UUID, isFavorite: Bool) async throws {}
+
     func recommendBranches(for address: SavedAddress) async throws -> BranchRecommendation {
         try recommendationResult.get()
     }
