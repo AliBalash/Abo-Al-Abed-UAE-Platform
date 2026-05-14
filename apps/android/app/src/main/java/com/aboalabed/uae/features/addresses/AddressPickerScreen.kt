@@ -3,6 +3,7 @@ package com.aboalabed.uae.features.addresses
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,6 +66,7 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 
 private val DubaiCenter = LatLng(25.2048, 55.2708)
+private const val ADDRESS_PICKER_LOG_TAG = "AddressPicker"
 
 @Composable
 fun AddressPickerScreen(
@@ -406,10 +408,13 @@ data class DraftAddress(
 
 @Suppress("DEPRECATION")
 private suspend fun geocodeQuery(context: Context, query: String): DraftAddress? = withContext(Dispatchers.IO) {
-    val result = Geocoder(context, Locale.getDefault())
-        .getFromLocationName(query, 1)
-        ?.firstOrNull()
-        ?: return@withContext null
+    val result = runCatching {
+        Geocoder(context, Locale.getDefault())
+            .getFromLocationName(query, 1)
+            ?.firstOrNull()
+    }.onFailure { error ->
+        Log.e(ADDRESS_PICKER_LOG_TAG, "Geocode query failed for input: $query", error)
+    }.getOrNull() ?: return@withContext null
 
     result.toDraft(defaultLine = query)
 }
@@ -417,10 +422,17 @@ private suspend fun geocodeQuery(context: Context, query: String): DraftAddress?
 @Suppress("DEPRECATION")
 private suspend fun reverseGeocode(context: Context, latitude: Double, longitude: Double): DraftAddress? =
     withContext(Dispatchers.IO) {
-        val result = Geocoder(context, Locale.getDefault())
-            .getFromLocation(latitude, longitude, 1)
-            ?.firstOrNull()
-            ?: return@withContext null
+        val result = runCatching {
+            Geocoder(context, Locale.getDefault())
+                .getFromLocation(latitude, longitude, 1)
+                ?.firstOrNull()
+        }.onFailure { error ->
+            Log.e(
+                ADDRESS_PICKER_LOG_TAG,
+                "Reverse geocode failed for lat=$latitude lng=$longitude",
+                error
+            )
+        }.getOrNull() ?: return@withContext null
 
         result.toDraft(defaultLine = "Selected map location")
     }
