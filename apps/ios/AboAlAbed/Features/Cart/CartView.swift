@@ -14,24 +14,23 @@ struct CartView: View {
                     ScrollView {
                         VStack(spacing: 14) {
                             ForEach(model.cartItems) { item in
-                                VStack(alignment: .leading, spacing: 10) {
-                                    HStack {
-                                        Text(item.product.name).font(.headline)
-                                        Spacer()
-                                        Button(role: .destructive) {
-                                            model.removeCartItem(item)
-                                        } label: {
-                                            Image(systemName: "trash")
+                                BrandCard(cornerRadius: 22) {
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        HStack {
+                                            Text(item.product.name).font(.headline)
+                                            Spacer()
+                                            Button(role: .destructive) {
+                                                model.removeCartItem(item)
+                                            } label: {
+                                                Image(systemName: "trash")
+                                            }
                                         }
+                                        Text("\(item.variant.name) · Qty \(item.quantity)")
+                                            .foregroundStyle(.secondary)
+                                        Text("AED \(item.totalPrice, specifier: "%.0f")")
+                                            .font(.subheadline.bold())
                                     }
-                                    Text("\(item.variant.name) · Qty \(item.quantity)")
-                                        .foregroundStyle(.secondary)
-                                    Text("AED \(item.totalPrice, specifier: "%.0f")")
-                                        .font(.subheadline.bold())
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                                .background(Color.white, in: RoundedRectangle(cornerRadius: 22))
                             }
 
                             VStack(alignment: .leading, spacing: 12) {
@@ -77,12 +76,8 @@ struct CartView: View {
                             }
                         } label: {
                             Text(model.isBusy ? "Placing Order..." : "Place Pickup Order")
-                                .fontWeight(.semibold)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(BrandTheme.heroGradient, in: RoundedRectangle(cornerRadius: 20))
-                                .foregroundStyle(.white)
                         }
+                        .buttonStyle(PrimaryActionButtonStyle(disabled: model.isBusy))
                     }
                     .padding()
                     .background(Color.white, in: RoundedRectangle(cornerRadius: 26))
@@ -95,7 +90,7 @@ struct CartView: View {
                 BranchSelectionView()
                     .environmentObject(model)
             }
-            .background(BrandTheme.cream.ignoresSafeArea())
+            .background(BrandBackground())
         }
     }
 }

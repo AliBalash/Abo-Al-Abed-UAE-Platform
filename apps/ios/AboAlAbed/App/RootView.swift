@@ -11,6 +11,11 @@ struct RootView: View {
                 AuthView()
             }
         }
+        .busyOverlay(
+            isPresented: model.isAuthenticated && model.isBusy,
+            title: "Processing Request",
+            subtitle: "Please wait while we sync your action with the service."
+        )
         .alert("Something needs attention", isPresented: Binding(
             get: { model.errorMessage != nil },
             set: { if !$0 { model.errorMessage = nil } }
@@ -31,21 +36,21 @@ private struct MainTabView: View {
                 HomeView()
             }
             .tabItem {
-                Label("Menu", systemImage: "fork.knife")
+                Label("Menu", systemImage: "house.fill")
             }
 
             NavigationStack {
                 FavoritesView()
             }
             .tabItem {
-                Label("Favorites", systemImage: "heart")
+                Label("Favorites", systemImage: "heart.fill")
             }
 
             NavigationStack {
                 OrdersHubView()
             }
             .tabItem {
-                Label("Orders", systemImage: "bag")
+                Label("Orders", systemImage: "receipt.fill")
             }
 
             NavigationStack {
@@ -54,7 +59,6 @@ private struct MainTabView: View {
             .tabItem {
                 Label("Account", systemImage: "person.crop.circle")
             }
-            .badge(model.cartCount > 0 ? model.cartCount : 0)
         }
         .tint(BrandTheme.brand)
     }

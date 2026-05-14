@@ -4,11 +4,11 @@ struct AuthView: View {
     @EnvironmentObject private var model: AppModel
     @State private var email = "customer@aboalabed.ae"
     @State private var password = "ChangeMe123!"
+    @State private var revealHero = false
 
     var body: some View {
         ZStack {
-            BrandTheme.heroGradient
-                .ignoresSafeArea()
+            BrandBackground()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
@@ -19,12 +19,15 @@ struct AuthView: View {
                             .frame(maxWidth: 220)
                             .padding(14)
                             .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
-                        Text("Pickup-first Farooj ordering with a sharper flow.")
+                        Text("Pickup-first ordering with a sharper, faster flow.")
                             .font(.system(size: 36, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(BrandTheme.ink)
                         Text("Login with email, lock your address, browse categories, and show your order code at pickup.")
-                            .foregroundStyle(.white.opacity(0.88))
+                            .foregroundStyle(.secondary)
                     }
+                    .scaleEffect(revealHero ? 1 : 0.98)
+                    .opacity(revealHero ? 1 : 0)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.82), value: revealHero)
 
                     VStack(spacing: 16) {
                         LabeledContent("Email") {
@@ -56,15 +59,10 @@ struct AuthView: View {
                             HStack {
                                 if model.isBusy { ProgressView().tint(.white) }
                                 Text(model.isBusy ? "Signing In..." : "Continue to Menu")
-                                    .fontWeight(.semibold)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.black.opacity(0.82), in: RoundedRectangle(cornerRadius: 18))
-                            .foregroundStyle(.white)
                         }
+                        .buttonStyle(PrimaryActionButtonStyle(disabled: model.isBusy))
                         .disabled(model.isBusy)
-                        .opacity(model.isBusy ? 0.72 : 1)
                     }
                     .padding(24)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
@@ -74,11 +72,12 @@ struct AuthView: View {
                         Label("Customer ordering flow is optimized for self-pickup only.", systemImage: "checkmark.seal.fill")
                         Label("Arabic-ready data model is baked in from the first iteration.", systemImage: "checkmark.seal.fill")
                     }
-                    .foregroundStyle(.white.opacity(0.92))
+                    .foregroundStyle(BrandTheme.ink.opacity(0.88))
                     .font(.subheadline)
                 }
                 .padding(24)
             }
         }
+        .onAppear { revealHero = true }
     }
 }
