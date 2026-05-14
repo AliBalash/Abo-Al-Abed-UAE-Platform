@@ -15,6 +15,7 @@ apps/api/.env
 apps/api/prisma/dev.db
 apps/api/prisma/dev.db-journal
 apps/api/generated
+apps/api/public/assets/menu/abo-menu-local-*.jpg
 apps/ios/build
 DerivedData
 *.xcworkspace

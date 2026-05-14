@@ -12,6 +12,7 @@
     "db:generate": "pnpm --filter @abo-al-abed/api prisma generate",
     "db:migrate": "pnpm --filter @abo-al-abed/api prisma migrate dev",
     "db:seed": "pnpm --filter @abo-al-abed/api prisma db seed",
+    "menu:sync-images": "python3 apps/api/scripts/sync_google_site_menu_images.py",
     "ios:project": "cd apps/ios && xcodegen generate",
     "android:build": "cd apps/android && ./gradlew :app:assembleDebug",
     "android:test": "cd apps/android && ./gradlew :app:testDebugUnitTest",
