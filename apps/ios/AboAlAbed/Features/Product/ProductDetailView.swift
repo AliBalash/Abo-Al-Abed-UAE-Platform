@@ -16,13 +16,13 @@ struct ProductDetailView: View {
                         switch phase {
                         case .success(let image):
                             image.resizable().scaledToFill()
-                        case .failure:
+                        case .failure, .empty:
                             Image(systemName: "photo")
                                 .font(.largeTitle)
                                 .foregroundStyle(.secondary)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .background(BrandTheme.panelGradient)
-                        default:
+                        @unknown default:
                             ZStack {
                                 BrandTheme.panelGradient
                                 ProgressView()
@@ -46,32 +46,34 @@ struct ProductDetailView: View {
                     }
 
                     ForEach(product.modifiers) { group in
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(group.name)
-                                .font(.headline)
-                            ForEach(group.options) { option in
-                                Button {
-                                    toggle(option: option, in: group)
-                                } label: {
-                                    HStack {
-                                        Text(option.name)
-                                        Spacer()
-                                        Text(option.priceDelta > 0 ? "+AED \(option.priceDelta, specifier: "%.0f")" : "Included")
-                                            .foregroundStyle(.secondary)
-                                        Image(systemName: isSelected(option: option, in: group) ? "checkmark.circle.fill" : "circle")
-                                            .foregroundStyle(isSelected(option: option, in: group) ? BrandTheme.brand : .secondary)
+                        BrandCard(cornerRadius: 20) {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text(group.name)
+                                    .font(.headline)
+                                ForEach(group.options) { option in
+                                    Button {
+                                        toggle(option: option, in: group)
+                                    } label: {
+                                        HStack {
+                                            Text(option.name)
+                                            Spacer()
+                                            Text(option.priceDelta > 0 ? "+AED \(option.priceDelta, specifier: "%.0f")" : "Included")
+                                                .foregroundStyle(.secondary)
+                                            Image(systemName: isSelected(option: option, in: group) ? "checkmark.circle.fill" : "circle")
+                                                .foregroundStyle(isSelected(option: option, in: group) ? BrandTheme.brand : .secondary)
+                                        }
+                                        .padding()
+                                        .background(Color.white, in: RoundedRectangle(cornerRadius: 18))
                                     }
-                                    .padding()
-                                    .background(Color.white, in: RoundedRectangle(cornerRadius: 18))
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
                     }
                 }
                 .padding(20)
             }
-            .background(BrandTheme.cream.ignoresSafeArea())
+            .background(BrandBackground())
             .safeAreaInset(edge: .bottom) {
                 Button {
                     let variant = product.variants[selectedVariantIndex]
@@ -85,15 +87,11 @@ struct ProductDetailView: View {
                     dismiss()
                 } label: {
                     Text("Add to Cart · AED \(selectedVariant.price + modifierPrice, specifier: "%.0f")")
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(BrandTheme.heroGradient, in: RoundedRectangle(cornerRadius: 22))
-                        .foregroundStyle(.white)
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
                         .padding(.bottom, 16)
                 }
+                .buttonStyle(PrimaryActionButtonStyle())
             }
         }
     }

@@ -19,7 +19,9 @@ struct BranchSelectionView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
             .navigationTitle("Select Branch")
+            .background(BrandBackground())
         }
     }
 

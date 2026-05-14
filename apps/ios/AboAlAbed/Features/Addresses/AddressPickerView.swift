@@ -38,11 +38,13 @@ struct AddressPickerView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                 }
             }
             .padding()
             .navigationTitle("Choose Address")
             .navigationBarTitleDisplayMode(.inline)
+            .background(BrandBackground())
         }
         .sheet(item: $draftAddress) { draft in
             AddressEditorView(draft: draft)
@@ -87,6 +89,10 @@ struct AddressPickerView: View {
         }
         .padding(14)
         .background(Color.white, in: RoundedRectangle(cornerRadius: 18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(BrandTheme.brand.opacity(0.08), lineWidth: 1)
+        )
         .shadow(color: BrandTheme.brand.opacity(0.08), radius: 12, y: 8)
     }
 
