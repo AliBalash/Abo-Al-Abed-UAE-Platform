@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		05045245EE9D55D512091DEA /* AboAlAbedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B321168A7465498F162B1C /* AboAlAbedApp.swift */; };
+		086EA5711513398415BACAF0 /* BrandComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9188771B0B90B2D2AE10539 /* BrandComponents.swift */; };
 		11841165FE0BFC7E806AE092 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83A32469169502533CB6AE2 /* RootView.swift */; };
 		270D0382A97CF1D63BCB833D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C41D94C984E668A29BE8FD53 /* MapKit.framework */; };
 		4C5F4084522CEEF297FD0DAB /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCE5B5E06828C31A7702668 /* AuthView.swift */; };
@@ -58,6 +59,7 @@
 		C94A6898A3F6A4822A1B0B52 /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
 		CAB72D60B85AC06A85F862C0 /* MockAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAPIClient.swift; sourceTree = "<group>"; };
 		D83A32469169502533CB6AE2 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		F9188771B0B90B2D2AE10539 /* BrandComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandComponents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 		3958AE73BAA1D21E9436CD56 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				F9188771B0B90B2D2AE10539 /* BrandComponents.swift */,
 				1C3D4B5E4E0DA5D111CA286D /* BrandTheme.swift */,
 			);
 			path = DesignSystem;
@@ -334,6 +337,7 @@
 				99D57472EDA46BDC91446079 /* AppModel.swift in Sources */,
 				4C5F4084522CEEF297FD0DAB /* AuthView.swift in Sources */,
 				6A7D7D9EF4E73672336FE487 /* BranchSelectionView.swift in Sources */,
+				086EA5711513398415BACAF0 /* BrandComponents.swift in Sources */,
 				4D2D45DC9BB819AE99CCD10E /* BrandTheme.swift in Sources */,
 				F513A938B71439312830C5D8 /* CartView.swift in Sources */,
 				B9A60987DE661C316409A13B /* HomeView.swift in Sources */,
