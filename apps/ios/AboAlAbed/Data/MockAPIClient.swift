@@ -58,7 +58,7 @@ struct MockAPIClient: APIClient {
                 categorySlug: categories[0].slug,
                 name: "Golden Chicken Sandwich",
                 detail: "Crispy signature sandwich built for fast self-pickup.",
-                imageURL: URL(string: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=80"),
+                imageURL: nil,
                 tags: ["Featured", "Best Seller"],
                 variants: [
                     ProductVariant(id: UUID(), name: "Regular", price: 19),
@@ -71,7 +71,7 @@ struct MockAPIClient: APIClient {
                 categorySlug: categories[4].slug,
                 name: "El-Abodi Meal",
                 detail: "Loaded meal with fries and drink.",
-                imageURL: URL(string: "https://images.unsplash.com/photo-1562967914-01efa7b7a2b9?auto=format&fit=crop&w=1200&q=80"),
+                imageURL: nil,
                 tags: ["Featured", "Meal"],
                 variants: [
                     ProductVariant(id: UUID(), name: "Regular", price: 29)
@@ -83,7 +83,7 @@ struct MockAPIClient: APIClient {
                 categorySlug: categories[5].slug,
                 name: "Loaded Fries",
                 detail: "Crisp fries with signature sauce.",
-                imageURL: URL(string: "https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=1200&q=80"),
+                imageURL: nil,
                 tags: ["Quick"],
                 variants: [
                     ProductVariant(id: UUID(), name: "Regular", price: 10)
