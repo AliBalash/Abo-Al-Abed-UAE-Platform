@@ -1,6 +1,11 @@
 import Foundation
 import MapKit
 
+enum HomeBannerPlacement: String, Hashable {
+    case topStrip = "top_strip"
+    case bottomFeature = "bottom_feature"
+}
+
 struct SessionUser: Codable, Equatable {
     let id: UUID
     let email: String
@@ -28,7 +33,15 @@ struct HomeBanner: Identifiable, Hashable {
     let id: UUID
     let title: String
     let subtitle: String
-    let palette: [String]
+    let imageURL: URL?
+    let ctaLabel: String
+    let ctaTarget: String
+    let placement: HomeBannerPlacement
+    let displayOrder: Int
+
+    var isGif: Bool {
+        imageURL?.pathExtension.lowercased() == "gif"
+    }
 }
 
 struct MenuCategory: Identifiable, Hashable {

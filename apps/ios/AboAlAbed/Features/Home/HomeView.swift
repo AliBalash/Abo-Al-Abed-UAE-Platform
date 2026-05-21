@@ -1,4 +1,5 @@
 import SwiftUI
+import WebKit
 
 struct HomeView: View {
     @EnvironmentObject private var model: AppModel
@@ -9,7 +10,7 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            if model.home.featured.isEmpty && model.home.recommendations.isEmpty && model.isBusy {
+            if model.home.featured.isEmpty && model.home.recommendations.isEmpty && model.isBootstrapping {
                 BrandLoadingView(
                     title: "Preparing Menu",
                     subtitle: "Loading your menu, saved address, and pickup branch."
@@ -18,7 +19,7 @@ struct HomeView: View {
             } else {
                 VStack(alignment: .leading, spacing: 20) {
                     addressBar
-                    banners
+                    offerBanners
                     categories
                     productSection(title: selectedCategoryTitle, subtitle: selectedCategorySubtitle, products: filteredProducts)
                 }
@@ -97,26 +98,57 @@ struct HomeView: View {
         .buttonStyle(.plain)
     }
 
-    private var banners: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
-                ForEach(model.home.banners) { banner in
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(banner.title)
-                            .font(.title3.bold())
-                            .foregroundStyle(.white)
-                        Text(banner.subtitle)
-                            .foregroundStyle(.white.opacity(0.84))
-                            .multilineTextAlignment(.leading)
-                        Spacer()
-                        Label("Self Pickup", systemImage: "bag.badge.checkmark")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                    }
-                    .padding(22)
-                    .frame(width: 300, height: 184)
-                    .background(BrandTheme.heroGradient, in: RoundedRectangle(cornerRadius: 30))
+    private var topStripBanners: [HomeBanner] {
+        model.home.banners
+            .filter { $0.placement == .topStrip }
+            .sorted { $0.displayOrder < $1.displayOrder }
+    }
+
+    private var bottomFeatureBanner: HomeBanner? {
+        model.home.banners
+            .filter { $0.placement == .bottomFeature }
+            .sorted { $0.displayOrder < $1.displayOrder }
+            .first
+    }
+
+    private var offerBanners: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if !topStripBanners.isEmpty || bottomFeatureBanner != nil {
+                HStack {
+                    Text("Exclusive Offers")
+                        .font(.title3.bold())
+                    Spacer()
+                    Image(systemName: "gift.fill")
+                        .foregroundStyle(BrandTheme.brand)
                 }
+            }
+
+            if !topStripBanners.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(topStripBanners) { banner in
+                            BannerMediaView(url: banner.imageURL, isGif: banner.isGif)
+                                .frame(width: 176, height: 86)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .stroke(Color.black.opacity(0.05), lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding(.trailing, 6)
+                }
+            }
+
+            if let bottomFeatureBanner {
+                BannerMediaView(url: bottomFeatureBanner.imageURL, isGif: bottomFeatureBanner.isGif)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 126)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.black.opacity(0.05), lineWidth: 1)
+                    )
             }
         }
     }
@@ -277,6 +309,70 @@ struct HomeView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+private struct BannerMediaView: View {
+    let url: URL?
+    let isGif: Bool
+
+    var body: some View {
+        ZStack {
+            if let url {
+                if isGif {
+                    GIFWebView(url: url)
+                } else {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        case .empty:
+                            ProgressView()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        case .failure:
+                            BannerPlaceholder()
+                        @unknown default:
+                            BannerPlaceholder()
+                        }
+                    }
+                }
+            } else {
+                BannerPlaceholder()
+            }
+        }
+        .background(Color.white)
+    }
+}
+
+private struct BannerPlaceholder: View {
+    var body: some View {
+        ZStack {
+            BrandTheme.panelGradient
+            Image(systemName: "photo")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct GIFWebView: UIViewRepresentable {
+    let url: URL
+
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView(frame: .zero)
+        webView.scrollView.isScrollEnabled = false
+        webView.backgroundColor = .clear
+        webView.isOpaque = false
+        webView.contentMode = .scaleAspectFill
+        return webView
+    }
+
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        if webView.url != url {
+            webView.load(URLRequest(url: url))
         }
     }
 }

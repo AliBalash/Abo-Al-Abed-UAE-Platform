@@ -94,8 +94,36 @@ struct MockAPIClient: APIClient {
 
         return HomeSnapshot(
             banners: [
-                HomeBanner(id: UUID(), title: "Self Pickup, Zero Waiting", subtitle: "Order ahead and collect with your code.", palette: ["#8B1116", "#CD2026", "#FFB848"]),
-                HomeBanner(id: UUID(), title: "Golden Sandwich Collection", subtitle: "Warm, bold, and repeat-order ready.", palette: ["#1C1C1C", "#8B1116", "#F7BE63"])
+                HomeBanner(
+                    id: UUID(),
+                    title: "Hareeq Offer",
+                    subtitle: "Hot slider deal for fast pickup.",
+                    imageURL: URL(string: "https://picsum.photos/500/240?1"),
+                    ctaLabel: "View Offer",
+                    ctaTarget: "/menu",
+                    placement: .topStrip,
+                    displayOrder: 1
+                ),
+                HomeBanner(
+                    id: UUID(),
+                    title: "Taghmisat Box",
+                    subtitle: "Sharing box deal.",
+                    imageURL: URL(string: "https://picsum.photos/500/240?2"),
+                    ctaLabel: "View Offer",
+                    ctaTarget: "/menu",
+                    placement: .topStrip,
+                    displayOrder: 2
+                ),
+                HomeBanner(
+                    id: UUID(),
+                    title: "30% App Deal",
+                    subtitle: "Order from app and save.",
+                    imageURL: URL(string: "https://picsum.photos/900/360?3"),
+                    ctaLabel: "Use Deal",
+                    ctaTarget: "/menu",
+                    placement: .bottomFeature,
+                    displayOrder: 10
+                ),
             ],
             categories: categories,
             featured: products,

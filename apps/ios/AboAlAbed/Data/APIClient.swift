@@ -471,13 +471,23 @@ private struct BannerResponse: Decodable {
     let id: UUID
     let title: LocalizedTextResponse
     let subtitle: LocalizedTextResponse
+    let imageUrl: String
+    let ctaLabel: LocalizedTextResponse?
+    let ctaTarget: String?
+    let theme: String?
+    let displayOrder: Int?
 
     func toDomain() -> HomeBanner {
-        HomeBanner(
+        let placement: HomeBannerPlacement = theme == HomeBannerPlacement.bottomFeature.rawValue ? .bottomFeature : .topStrip
+        return HomeBanner(
             id: id,
             title: title.primary,
             subtitle: subtitle.primary,
-            palette: ["#8B1116", "#CD2026", "#FFB848"]
+            imageURL: URL(string: imageUrl),
+            ctaLabel: ctaLabel?.primary ?? "Open",
+            ctaTarget: ctaTarget ?? "/menu",
+            placement: placement,
+            displayOrder: displayOrder ?? 0
         )
     }
 }

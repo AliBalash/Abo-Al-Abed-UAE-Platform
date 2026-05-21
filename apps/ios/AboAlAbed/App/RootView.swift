@@ -12,7 +12,7 @@ struct RootView: View {
             }
         }
         .busyOverlay(
-            isPresented: model.isAuthenticated && model.isBusy,
+            isPresented: model.isAuthenticated && model.isBusy && !model.isBootstrapping,
             title: "Processing Request",
             subtitle: "Please wait while we sync your action with the service."
         )

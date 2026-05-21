@@ -4,19 +4,23 @@ struct BrandBackground: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [BrandTheme.cream, BrandTheme.cream, Color.white],
+                colors: [
+                    Color.white,
+                    BrandTheme.cream.opacity(0.88),
+                    Color(red: 0.95, green: 0.95, blue: 0.95),
+                ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
             Circle()
-                .fill(BrandTheme.sun.opacity(0.2))
+                .fill(BrandTheme.sun.opacity(0.12))
                 .frame(width: 360, height: 360)
                 .blur(radius: 36)
                 .offset(x: 150, y: -250)
 
             Circle()
-                .fill(BrandTheme.brand.opacity(0.08))
+                .fill(BrandTheme.brand.opacity(0.05))
                 .frame(width: 280, height: 280)
                 .blur(radius: 28)
                 .offset(x: -180, y: 320)

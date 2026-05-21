@@ -12,6 +12,7 @@ final class AppModel: ObservableObject {
     @Published var selectedBranch: Branch?
     @Published var activeOrder: CustomerOrder?
     @Published var isBusy = false
+    @Published var isBootstrapping = false
     @Published var errorMessage: String?
 
     private let environment: AppEnvironment
@@ -27,6 +28,7 @@ final class AppModel: ObservableObject {
     func login(email: String, password: String) async {
         errorMessage = nil
         isBusy = true
+        isBootstrapping = true
 
         do {
             let result = try await environment.apiClient.login(email: email, password: password)
@@ -34,6 +36,7 @@ final class AppModel: ObservableObject {
             await loadBootstrapData()
         } catch {
             isBusy = false
+            isBootstrapping = false
             session = nil
             savedAddresses = []
             selectedAddress = nil
@@ -68,6 +71,7 @@ final class AppModel: ObservableObject {
             selectedBranch = nil
         }
 
+        isBootstrapping = false
         isBusy = false
     }
 
