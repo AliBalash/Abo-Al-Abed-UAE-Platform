@@ -3,7 +3,7 @@
 Monorepo for the self-pickup ordering ecosystem:
 
 - `apps/api`: NestJS backend with Prisma/PostgreSQL contracts
-- `apps/web`: Next.js operations and admin web app
+- `apps/web`: Next.js admin and kitchen web app
 - `apps/ios`: SwiftUI iPhone client scaffold generated via XcodeGen
 - `apps/android`: Native Kotlin/Jetpack Compose customer app
 - `packages/contracts`: shared API schemas and domain types
@@ -12,10 +12,10 @@ Monorepo for the self-pickup ordering ecosystem:
 ## Quick start
 
 1. Copy `.env.example` to `.env`.
-2. Start infrastructure:
+2. Start full stack (db + redis + api + admin + kitchen):
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 3. Install dependencies:
@@ -32,23 +32,17 @@ pnpm db:migrate
 pnpm db:seed
 ```
 
-5. Run API and web:
-
-```bash
-pnpm dev
-```
-
-### Split Admin/Kitchen Panels (separate ports + compose)
-
-Use the dedicated compose stack to run isolated panel deployments:
-
-```bash
-docker compose -f docker-compose.panels.yml up --build
-```
+5. Panel URLs:
 
 - Admin panel: `http://localhost:3000/admin`
 - Kitchen panel: `http://localhost:3001/kitchen`
 - API: `http://localhost:4000/api`
+
+For local non-docker development (optional):
+
+```bash
+pnpm dev
+```
 
 6. Generate the iOS Xcode project:
 

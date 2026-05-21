@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgis/postgis:16-3.4
-    container_name: abo-al-abed-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: abo_al_abed
@@ -15,12 +14,60 @@ services:
 
   redis:
     image: redis:7.4-alpine
-    container_name: abo-al-abed-redis
     restart: unless-stopped
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      PORT: "4000"
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/abo_al_abed?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "${JWT_SECRET:-replace-me}"
+    ports:
+      - "4000:4000"
+
+  admin-panel:
+    image: abo-al-abed-web:local
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      PANEL_MODE: "admin"
+      NEXT_PUBLIC_PANEL_MODE: "admin"
+      NEXT_PUBLIC_API_URL: "http://localhost:4000/api"
+      NEXT_PUBLIC_KITCHEN_PANEL_URL: "http://localhost:3001/kitchen"
+    ports:
+      - "3000:3000"
+
+  kitchen-panel:
+    image: abo-al-abed-web:local
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      PANEL_MODE: "kitchen"
+      NEXT_PUBLIC_PANEL_MODE: "kitchen"
+      NEXT_PUBLIC_API_URL: "http://localhost:4000/api"
+      NEXT_PUBLIC_ADMIN_PANEL_URL: "http://localhost:3000/admin"
+    ports:
+      - "3001:3000"
 
 volumes:
   postgres-data:
