@@ -193,6 +193,60 @@ class UpdateBannerDto {
   ctaTarget?: string;
 
   @IsOptional()
+  @IsString()
+  theme?: string;
+
+  @IsOptional()
+  @IsInt()
+  displayOrder?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+class CreateBannerDto {
+  @IsString()
+  @MinLength(2)
+  titleEn!: string;
+
+  @IsOptional()
+  @IsString()
+  titleAr?: string;
+
+  @IsString()
+  @MinLength(2)
+  subtitleEn!: string;
+
+  @IsOptional()
+  @IsString()
+  subtitleAr?: string;
+
+  @IsString()
+  @MinLength(3)
+  imageUrl!: string;
+
+  @IsOptional()
+  @IsString()
+  ctaLabelEn?: string;
+
+  @IsOptional()
+  @IsString()
+  ctaLabelAr?: string;
+
+  @IsOptional()
+  @IsString()
+  ctaTarget?: string;
+
+  @IsOptional()
+  @IsString()
+  theme?: string;
+
+  @IsOptional()
+  @IsInt()
+  displayOrder?: number;
+
+  @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 }
@@ -433,6 +487,29 @@ class AdminService {
     }));
   }
 
+  async createBanner(actor: AuthenticatedUser, dto: CreateBannerDto, assetBaseUrl?: string) {
+    const banner = await this.prisma.homeBanner.create({
+      data: {
+        titleEn: dto.titleEn,
+        titleAr: dto.titleAr || dto.titleEn,
+        subtitleEn: dto.subtitleEn,
+        subtitleAr: dto.subtitleAr || dto.subtitleEn,
+        imageUrl: dto.imageUrl,
+        ctaLabelEn: dto.ctaLabelEn || "Open",
+        ctaLabelAr: dto.ctaLabelAr || dto.ctaLabelEn || "Open",
+        ctaTarget: dto.ctaTarget || "/menu",
+        theme: dto.theme || "top_strip",
+        displayOrder: dto.displayOrder ?? 1,
+        isActive: dto.isActive ?? true,
+      },
+    });
+    await this.audit(actor, "banner.created", "home_banner", banner.id, dto);
+    return {
+      ...banner,
+      imageUrl: resolvePublicAssetUrl(banner.imageUrl, assetBaseUrl),
+    };
+  }
+
   async updateBanner(actor: AuthenticatedUser, bannerId: string, dto: UpdateBannerDto) {
     const banner = await this.prisma.homeBanner.update({
       where: { id: bannerId },
@@ -442,6 +519,8 @@ class AdminService {
         imageUrl: dto.imageUrl,
         ctaLabelEn: dto.ctaLabelEn,
         ctaTarget: dto.ctaTarget,
+        theme: dto.theme,
+        displayOrder: dto.displayOrder,
         isActive: dto.isActive,
       },
     });
@@ -624,55 +703,55 @@ class AdminService {
 class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Get("overview")
   overview() {
     return this.adminService.overview();
   }
 
-  @Roles("super_admin", "ops_manager", "branch_manager")
+  @Roles("super_admin", "kitchen_manager", "branch_manager")
   @Get("branches")
   branches() {
     return this.adminService.branches();
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Patch("branches/:branchId")
   updateBranch(@CurrentUser() user: AuthenticatedUser, @Param("branchId") branchId: string, @Body() dto: UpdateBranchDto) {
     return this.adminService.updateBranch(user, branchId, dto);
   }
 
-  @Roles("super_admin", "ops_manager", "branch_manager")
+  @Roles("super_admin", "kitchen_manager", "branch_manager")
   @Get("categories")
   categories() {
     return this.adminService.categories();
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Post("categories")
   createCategory(@CurrentUser() user: AuthenticatedUser, @Body() dto: SaveCategoryDto) {
     return this.adminService.createCategory(user, dto);
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Patch("categories/:categoryId")
   updateCategory(@CurrentUser() user: AuthenticatedUser, @Param("categoryId") categoryId: string, @Body() dto: SaveCategoryDto) {
     return this.adminService.updateCategory(user, categoryId, dto);
   }
 
-  @Roles("super_admin", "ops_manager", "branch_manager")
+  @Roles("super_admin", "kitchen_manager", "branch_manager")
   @Get("catalog")
   catalog(@Query("categoryId") categoryId: string | undefined, @Query("status") status: ProductStatus | "ALL" | undefined, @Req() request: Request) {
     return this.adminService.catalog(categoryId, status, publicAssetBaseUrlFromRequest(request));
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Post("products")
   createProduct(@CurrentUser() user: AuthenticatedUser, @Body() dto: SaveProductDto, @Req() request: Request) {
     return this.adminService.createProduct(user, dto, publicAssetBaseUrlFromRequest(request));
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Patch("products/:productId")
   updateProduct(
     @CurrentUser() user: AuthenticatedUser,
@@ -683,49 +762,55 @@ class AdminController {
     return this.adminService.updateProduct(user, productId, dto, publicAssetBaseUrlFromRequest(request));
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Post("products/:productId/variants")
   createVariant(@CurrentUser() user: AuthenticatedUser, @Param("productId") productId: string, @Body() dto: SaveVariantDto) {
     return this.adminService.createVariant(user, productId, dto);
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Patch("variants/:variantId")
   updateVariant(@CurrentUser() user: AuthenticatedUser, @Param("variantId") variantId: string, @Body() dto: SaveVariantDto) {
     return this.adminService.updateVariant(user, variantId, dto);
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Get("banners")
   banners(@Req() request: Request) {
     return this.adminService.banners(publicAssetBaseUrlFromRequest(request));
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
+  @Post("banners")
+  createBanner(@CurrentUser() user: AuthenticatedUser, @Body() dto: CreateBannerDto, @Req() request: Request) {
+    return this.adminService.createBanner(user, dto, publicAssetBaseUrlFromRequest(request));
+  }
+
+  @Roles("super_admin", "kitchen_manager")
   @Patch("banners/:bannerId")
   updateBanner(@CurrentUser() user: AuthenticatedUser, @Param("bannerId") bannerId: string, @Body() dto: UpdateBannerDto) {
     return this.adminService.updateBanner(user, bannerId, dto);
   }
 
-  @Roles("super_admin", "ops_manager", "branch_manager", "support_readonly")
+  @Roles("super_admin", "kitchen_manager", "branch_manager", "support_readonly")
   @Get("orders")
   orders(@Query("branchId") branchId?: string, @Query("status") status?: string) {
     return this.adminService.orders(branchId, status);
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Get("users")
   users() {
     return this.adminService.users();
   }
 
-  @Roles("super_admin", "ops_manager")
+  @Roles("super_admin", "kitchen_manager")
   @Get("audit")
   auditLog() {
     return this.adminService.auditLog();
   }
 
-  @Roles("super_admin", "ops_manager", "branch_manager")
+  @Roles("super_admin", "kitchen_manager", "branch_manager")
   @Patch("availability")
   updateAvailability(@CurrentUser() user: AuthenticatedUser, @Body() dto: UpdateAvailabilityDto) {
     return this.adminService.updateAvailability(user, dto);
