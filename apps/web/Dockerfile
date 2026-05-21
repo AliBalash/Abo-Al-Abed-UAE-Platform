@@ -13,12 +13,13 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 RUN pnpm --filter @abo-al-abed/web build
 
 FROM node:20-alpine AS runner
-RUN corepack enable
-WORKDIR /workspace
+WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY --from=build /workspace /workspace
+COPY --from=build /workspace/apps/web/.next/standalone ./
+COPY --from=build /workspace/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build /workspace/apps/web/public ./apps/web/public
 
 EXPOSE 3000
-CMD ["pnpm", "--filter", "@abo-al-abed/web", "start"]
+CMD ["node", "apps/web/server.js"]
