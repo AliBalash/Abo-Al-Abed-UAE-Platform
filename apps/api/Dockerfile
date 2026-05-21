@@ -1,3 +1,4 @@
+## syntax=docker/dockerfile:1.7
 FROM node:20-alpine AS build
 RUN corepack enable
 WORKDIR /workspace
@@ -6,7 +7,9 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.js
 COPY apps ./apps
 COPY packages ./packages
 
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm config set store-dir /pnpm/store && \
+    pnpm install --frozen-lockfile --prefer-offline
 RUN pnpm --filter @abo-al-abed/api build
 
 FROM node:20-alpine AS runner

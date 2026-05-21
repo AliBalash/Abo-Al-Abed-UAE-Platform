@@ -37,6 +37,7 @@ services:
       - "4000:4000"
 
   admin-panel:
+    image: abo-al-abed-web:local
     build:
       context: .
       dockerfile: apps/web/Dockerfile
@@ -54,9 +55,7 @@ services:
       - "3000:3000"
 
   kitchen-panel:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
+    image: abo-al-abed-web:local
     restart: unless-stopped
     depends_on:
       - api
