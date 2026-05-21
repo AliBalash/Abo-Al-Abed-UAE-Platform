@@ -882,3 +882,407 @@ td {
     grid-template-columns: 1fr;
   }
 }
+
+.tag.danger {
+  background: rgba(139, 17, 22, 0.14);
+  color: var(--danger);
+}
+
+.command-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  background:
+    radial-gradient(circle at left top, rgba(255, 184, 72, 0.16), transparent 34%),
+    linear-gradient(180deg, #f7f1ea, #fdfaf6);
+}
+
+.command-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  padding: 22px;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  background: linear-gradient(180deg, #13181f, #10212a 58%, #1d3b4d);
+  color: #f4f8fb;
+}
+
+.command-logo {
+  width: 190px;
+  max-width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.command-user {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.command-user small {
+  opacity: 0.72;
+}
+
+.command-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.command-nav button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 10px;
+  padding: 0 12px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  color: rgba(244, 248, 251, 0.82);
+  background: transparent;
+}
+
+.command-nav button.active,
+.command-nav button:hover {
+  background: #f4f8fb;
+  color: #10212a;
+}
+
+.command-side-actions {
+  margin-top: auto;
+  display: grid;
+  gap: 10px;
+}
+
+.command-main {
+  min-width: 0;
+  padding: 24px;
+}
+
+.command-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 22px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 40px rgba(16, 33, 42, 0.12);
+}
+
+.command-topbar h1 {
+  margin: 10px 0 6px;
+  font-size: clamp(1.9rem, 3vw, 3.2rem);
+  line-height: 0.95;
+}
+
+.command-section {
+  display: grid;
+  gap: 18px;
+}
+
+.command-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.command-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.command-kpis {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.command-kpi,
+.command-card {
+  border-radius: 20px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 32px rgba(16, 33, 42, 0.1);
+}
+
+.command-kpi {
+  display: grid;
+  gap: 8px;
+}
+
+.command-kpi strong {
+  font-size: 1.82rem;
+}
+
+.command-kpi span,
+.command-kpi small {
+  color: rgba(28, 28, 28, 0.62);
+}
+
+.command-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.command-list {
+  display: grid;
+  gap: 10px;
+}
+
+.command-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.command-row.compact {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.command-row div {
+  display: grid;
+  gap: 4px;
+}
+
+.command-row span {
+  color: rgba(28, 28, 28, 0.58);
+  font-size: 0.9rem;
+}
+
+.availability-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.availability-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.kitchen-shell {
+  min-height: 100vh;
+  padding: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 184, 72, 0.14), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(205, 32, 38, 0.1), transparent 36%),
+    linear-gradient(180deg, #15191e, #1b222b 45%, #11151a);
+  color: #edf3f7;
+}
+
+.kitchen-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(10, 13, 18, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.26);
+}
+
+.kitchen-header h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.95;
+}
+
+.kitchen-header p {
+  margin: 0;
+  color: rgba(237, 243, 247, 0.8);
+}
+
+.kitchen-header-side {
+  display: grid;
+  gap: 10px;
+  min-width: 320px;
+}
+
+.kitchen-header-side .btn-row {
+  align-items: center;
+}
+
+.kitchen-header-side select {
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #edf3f7;
+}
+
+.kitchen-header-side option {
+  color: #14181d;
+}
+
+.kitchen-header-side small {
+  color: rgba(237, 243, 247, 0.72);
+}
+
+.kitchen-metrics {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.kitchen-metrics .stat-card {
+  background: rgba(237, 243, 247, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.kitchen-metrics .stat-card strong,
+.kitchen-metrics .stat-card span,
+.kitchen-metrics .stat-card small {
+  color: #101820;
+}
+
+.kitchen-layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1.35fr 0.9fr;
+  align-items: start;
+}
+
+.kitchen-panel {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(237, 243, 247, 0.94);
+  color: #11161b;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+}
+
+.kitchen-panel.dark {
+  background: linear-gradient(180deg, rgba(17, 22, 27, 0.98), rgba(32, 45, 57, 0.96));
+  color: #edf3f7;
+}
+
+.kitchen-panel.dark p,
+.kitchen-panel.dark .muted {
+  color: rgba(237, 243, 247, 0.8);
+}
+
+.kitchen-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.kitchen-side-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.kitchen-stock-grid {
+  display: grid;
+  gap: 10px;
+  max-height: 560px;
+  overflow: auto;
+  margin-top: 12px;
+  padding-right: 4px;
+}
+
+.stock-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.status-pill.danger {
+  background: rgba(139, 17, 22, 0.15);
+  color: var(--danger);
+}
+
+@media (max-width: 1280px) {
+  .command-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .command-sidebar {
+    position: static;
+    height: auto;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+
+  .command-nav {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .command-nav button {
+    text-align: center;
+  }
+
+  .command-side-actions {
+    grid-column: 1 / -1;
+    margin-top: 0;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .command-side-actions .btn {
+    flex: 1;
+  }
+
+  .kitchen-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .command-grid.two,
+  .command-topbar,
+  .command-card-head,
+  .command-row,
+  .kitchen-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kitchen-header-side {
+    min-width: 0;
+  }
+
+  .kitchen-header-side .btn {
+    flex: 1;
+  }
+
+  .kitchen-header-side select {
+    width: 100%;
+  }
+
+  .command-main,
+  .kitchen-shell {
+    padding: 14px;
+  }
+}

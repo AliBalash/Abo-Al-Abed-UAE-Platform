@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useEffect } from "react";
 
 import { SessionProvider, useSession } from "@/components/shared/session";
 
@@ -8,8 +9,14 @@ function LoginPageContent() {
   const { login } = useSession();
   const [email, setEmail] = useState("admin@aboalabed.ae");
   const [password, setPassword] = useState("ChangeMe123!");
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRedirectTo(params.get("next"));
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -17,7 +24,7 @@ function LoginPageContent() {
     setError(null);
 
     try {
-      await login(email, password);
+      await login(email, password, redirectTo);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to login");
     } finally {
