@@ -7,7 +7,9 @@ import { SessionProvider, useSession } from "@/components/shared/session";
 
 function LoginPageContent() {
   const { login } = useSession();
-  const [email, setEmail] = useState("admin@aboalabed.ae");
+  const panelMode = (process.env.NEXT_PUBLIC_PANEL_MODE ?? "unified").toLowerCase();
+  const kitchenMode = panelMode === "kitchen";
+  const [email, setEmail] = useState(kitchenMode ? "kitchen@aboalabed.ae" : "admin@aboalabed.ae");
   const [password, setPassword] = useState("ChangeMe123!");
   const [redirectTo, setRedirectTo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,8 +41,9 @@ function LoginPageContent() {
           <img className="brand-logo" src="/brand/farooj-logo-english.png" alt="Farooj Abu Al-Abed" />
           <h1>Pickup-first restaurant operations, without the clutter.</h1>
           <p>
-            This internal panel covers cashier confirmation, kitchen flow, branch controls, catalog visibility, and
-            launch reporting for the Abo Al-Abed UAE ecosystem.
+            {kitchenMode
+              ? "Kitchen workspace for branch order queues, prep stages, and live menu availability."
+              : "This internal panel covers cashier confirmation, kitchen flow, branch controls, catalog visibility, and launch reporting for the Abo Al-Abed UAE ecosystem."}
           </p>
           <div className="mini-grid">
             <div className="hero-pill">Cashier demo: `cashier@aboalabed.ae`</div>
