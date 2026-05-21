@@ -25,6 +25,7 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 const TOKEN_KEY = "abo-al-abed-token";
 const USER_KEY = "abo-al-abed-user";
 const TOKEN_COOKIE_KEY = "abo_al_abed_token";
+const ROLES_COOKIE_KEY = "abo_al_abed_roles";
 
 function readCookie(name: string) {
   if (typeof document === "undefined") return null;
@@ -40,8 +41,17 @@ function setAuthCookie(token: string) {
   document.cookie = `${TOKEN_COOKIE_KEY}=${encodeURIComponent(token)}; Max-Age=${7 * 24 * 60 * 60}; Path=/; SameSite=Lax`;
 }
 
+function setRolesCookie(roles: string[]) {
+  const value = roles.join(",");
+  document.cookie = `${ROLES_COOKIE_KEY}=${encodeURIComponent(value)}; Max-Age=${7 * 24 * 60 * 60}; Path=/; SameSite=Lax`;
+}
+
 function clearAuthCookie() {
   document.cookie = `${TOKEN_COOKIE_KEY}=; Max-Age=0; Path=/; SameSite=Lax`;
+}
+
+function clearRolesCookie() {
+  document.cookie = `${ROLES_COOKIE_KEY}=; Max-Age=0; Path=/; SameSite=Lax`;
 }
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
@@ -59,7 +69,11 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       setAuthCookie(storedToken);
       window.localStorage.setItem(TOKEN_KEY, storedToken);
     }
-    if (storedUser) setUser(JSON.parse(storedUser) as SessionUser);
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser) as SessionUser;
+      setUser(parsed);
+      setRolesCookie(parsed.roles ?? []);
+    }
     setLoading(false);
   }, []);
 
@@ -88,6 +102,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         window.localStorage.setItem(TOKEN_KEY, payload.accessToken);
         window.localStorage.setItem(USER_KEY, JSON.stringify(payload.user));
         setAuthCookie(payload.accessToken);
+        setRolesCookie(payload.user.roles ?? []);
         setToken(payload.accessToken);
         setUser(payload.user);
         const panelMode = (process.env.NEXT_PUBLIC_PANEL_MODE ?? "unified").toLowerCase();
@@ -112,6 +127,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         window.localStorage.removeItem(TOKEN_KEY);
         window.localStorage.removeItem(USER_KEY);
         clearAuthCookie();
+        clearRolesCookie();
         setToken(null);
         setUser(null);
         startTransition(() => router.push("/login"));
