@@ -38,6 +38,18 @@ pnpm db:seed
 pnpm dev
 ```
 
+### Split Admin/Kitchen Panels (separate ports + compose)
+
+Use the dedicated compose stack to run isolated panel deployments:
+
+```bash
+docker compose -f docker-compose.panels.yml up --build
+```
+
+- Admin panel: `http://localhost:3000/admin`
+- Kitchen panel: `http://localhost:3001/kitchen`
+- API: `http://localhost:4000/api`
+
 6. Generate the iOS Xcode project:
 
 ```bash
