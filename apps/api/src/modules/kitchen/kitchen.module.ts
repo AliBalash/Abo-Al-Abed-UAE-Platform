@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Get, Injectable, Module, Param, Patch, Query } from "@nestjs/common";
-import { OrderStatus } from "@prisma/client";
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import { AvailabilityStatus, OrderStatus, ProductStatus } from "@prisma/client";
+import { IsEnum, IsOptional, IsString, IsUUID } from "class-validator";
 
 import { CurrentUser } from "../../common/current-user.decorator";
 import type { AuthenticatedUser } from "../../common/authenticated-user.interface";
@@ -25,8 +25,23 @@ class UpdateOrderStatusDto {
   note?: string;
 }
 
+class UpdateAvailabilityDto {
+  @IsUUID()
+  branchId!: string;
+
+  @IsUUID()
+  productId!: string;
+
+  @IsEnum(AvailabilityStatus)
+  status!: AvailabilityStatus;
+
+  @IsOptional()
+  @IsString()
+  note?: string;
+}
+
 @Injectable()
-class BranchOpsService {
+class KitchenService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
@@ -36,11 +51,7 @@ class BranchOpsService {
   ) {}
 
   async queue(user: AuthenticatedUser, branchId?: string) {
-    const resolvedBranchId = branchId ?? user.branchIds[0];
-
-    if (!resolvedBranchId) {
-      throw new BadRequestException("Branch context is required");
-    }
+    const resolvedBranchId = this.resolveBranchContext(user, branchId);
 
     const [branch, orders] = await Promise.all([
       this.prisma.branch.findUnique({ where: { id: resolvedBranchId } }),
@@ -85,7 +96,7 @@ class BranchOpsService {
   }
 
   async lookup(user: AuthenticatedUser, orderCode: string) {
-    return this.ordersService.findByCodeForOps(orderCode, user.branchIds);
+    return this.ordersService.findByCodeForKitchen(orderCode, user.branchIds);
   }
 
   async updateStatus(user: AuthenticatedUser, orderId: string, dto: UpdateOrderStatusDto) {
@@ -152,6 +163,53 @@ class BranchOpsService {
     return { ok: true };
   }
 
+  async availability(user: AuthenticatedUser, branchId?: string) {
+    const resolvedBranchId = this.resolveBranchContext(user, branchId);
+
+    const products = await this.prisma.product.findMany({
+      where: { status: ProductStatus.ACTIVE },
+      include: {
+        category: true,
+        variants: { orderBy: [{ isDefault: "desc" }, { price: "asc" }] },
+        branchAvailability: {
+          where: { branchId: resolvedBranchId },
+          take: 1,
+        },
+      },
+      orderBy: [{ category: { displayOrder: "asc" } }, { nameEn: "asc" }],
+    });
+
+    return products.map((product) => {
+      const entry = product.branchAvailability[0];
+      return {
+        productId: product.id,
+        productName: product.nameEn,
+        categoryName: product.category?.titleEn ?? "Uncategorized",
+        status: entry?.status ?? AvailabilityStatus.AVAILABLE,
+        note: entry?.note ?? null,
+        basePrice: product.variants[0] ? buildMoney(product.variants[0].price) : null,
+      };
+    });
+  }
+
+  async updateAvailability(user: AuthenticatedUser, dto: UpdateAvailabilityDto) {
+    this.resolveBranchContext(user, dto.branchId);
+
+    const availability = await this.prisma.branchProductAvailability.upsert({
+      where: { branchId_productId: { branchId: dto.branchId, productId: dto.productId } },
+      update: { status: dto.status, note: dto.note },
+      create: { branchId: dto.branchId, productId: dto.productId, status: dto.status, note: dto.note },
+    });
+
+    await this.auditService.log(user.id, "kitchen.availability.updated", "branch_product_availability", availability.id, {
+      branchId: dto.branchId,
+      productId: dto.productId,
+      status: dto.status,
+    });
+
+    return availability;
+  }
+
   private mapQueueOrder(order: any) {
     const customerName = [order.customer?.customerProfile?.firstName, order.customer?.customerProfile?.lastName].filter(Boolean).join(" ");
 
@@ -194,38 +252,67 @@ class BranchOpsService {
       })),
     };
   }
+
+  private resolveBranchContext(user: AuthenticatedUser, requestedBranchId?: string) {
+    const privileged = user.roles.includes("super_admin") || user.roles.includes("kitchen_manager");
+
+    if (requestedBranchId) {
+      if (privileged || user.branchIds.includes(requestedBranchId)) {
+        return requestedBranchId;
+      }
+      throw new BadRequestException("You do not have access to this branch");
+    }
+
+    if (user.branchIds[0]) {
+      return user.branchIds[0];
+    }
+
+    throw new BadRequestException("Branch context is required");
+  }
 }
 
-@Controller("branch-ops")
-class BranchOpsController {
-  constructor(private readonly branchOpsService: BranchOpsService) {}
+@Controller("kitchen")
+class KitchenController {
+  constructor(private readonly kitchenService: KitchenService) {}
 
-  @Roles("cashier", "branch_manager", "kitchen_staff", "ops_manager", "super_admin")
+  @Roles("cashier", "branch_manager", "kitchen_staff", "kitchen_manager", "super_admin")
   @Get("queue")
   queue(@CurrentUser() user: AuthenticatedUser, @Query("branchId") branchId?: string) {
-    return this.branchOpsService.queue(user, branchId);
+    return this.kitchenService.queue(user, branchId);
   }
 
-  @Roles("cashier", "branch_manager", "ops_manager", "super_admin")
+  @Roles("cashier", "branch_manager", "kitchen_manager", "super_admin")
   @Get("lookup")
   lookup(@CurrentUser() user: AuthenticatedUser, @Query("orderCode") orderCode: string) {
-    return this.branchOpsService.lookup(user, orderCode);
+    return this.kitchenService.lookup(user, orderCode);
   }
 
-  @Roles("kitchen_staff", "branch_manager", "ops_manager", "super_admin")
+  @Roles("kitchen_staff", "branch_manager", "kitchen_manager", "super_admin")
   @Patch("orders/:orderId/status")
   updateStatus(
     @CurrentUser() user: AuthenticatedUser,
     @Param("orderId") orderId: string,
     @Body() dto: UpdateOrderStatusDto,
   ) {
-    return this.branchOpsService.updateStatus(user, orderId, dto);
+    return this.kitchenService.updateStatus(user, orderId, dto);
+  }
+
+  @Roles("cashier", "kitchen_staff", "branch_manager", "kitchen_manager", "super_admin")
+  @Get("availability")
+  availability(@CurrentUser() user: AuthenticatedUser, @Query("branchId") branchId?: string) {
+    return this.kitchenService.availability(user, branchId);
+  }
+
+  @Roles("kitchen_staff", "branch_manager", "kitchen_manager", "super_admin")
+  @Patch("availability")
+  updateAvailability(@CurrentUser() user: AuthenticatedUser, @Body() dto: UpdateAvailabilityDto) {
+    return this.kitchenService.updateAvailability(user, dto);
   }
 }
 
 @Module({
   imports: [NotificationsModule, AuditModule, OrdersModule],
-  controllers: [BranchOpsController],
-  providers: [BranchOpsService],
+  controllers: [KitchenController],
+  providers: [KitchenService],
 })
-export class BranchOpsModule {}
+export class KitchenModule {}

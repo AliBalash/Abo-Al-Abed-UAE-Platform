@@ -5,7 +5,7 @@ export type Locale = z.infer<typeof localeSchema>;
 
 export const roleSchema = z.enum([
   "super_admin",
-  "ops_manager",
+  "kitchen_manager",
   "branch_manager",
   "cashier",
   "kitchen_staff",

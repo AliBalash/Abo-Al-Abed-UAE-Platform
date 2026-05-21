@@ -251,7 +251,7 @@ export class OrdersService {
     return this.mapOrder(order);
   }
 
-  async findByCodeForOps(orderCode: string, branchIds: string[]) {
+  async findByCodeForKitchen(orderCode: string, branchIds: string[]) {
     const order = await this.prisma.order.findFirst({
       where: {
         orderCode,

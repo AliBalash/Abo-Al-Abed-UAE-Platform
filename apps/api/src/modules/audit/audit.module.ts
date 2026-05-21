@@ -32,7 +32,7 @@ export class AuditService {
 class AuditController {
   constructor(private readonly auditService: AuditService) {}
 
-  @Roles("super_admin", "ops_manager", "support_readonly")
+  @Roles("super_admin", "kitchen_manager", "support_readonly")
   @Get()
   recent() {
     return this.auditService.recent();

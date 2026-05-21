@@ -98,7 +98,7 @@ class PaymentsService {
 class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @Roles("cashier", "branch_manager", "ops_manager", "super_admin")
+  @Roles("cashier", "branch_manager", "kitchen_manager", "super_admin")
   @Post("confirm")
   confirm(@CurrentUser() user: AuthenticatedUser, @Body() dto: ConfirmPaymentDto) {
     return this.paymentsService.confirmPayment(user, dto);

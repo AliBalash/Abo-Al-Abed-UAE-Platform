@@ -1,4 +1,4 @@
-export const mockOpsData = {
+export const mockKitchenData = {
   awaitingPayment: [
     { id: "1", orderCode: "AA1483", branchName: "Dubai Business Village", itemCount: 3, total: 58, expiresAt: "12:45", customer: "Demo Customer" },
     { id: "2", orderCode: "AA9315", branchName: "Dubai Business Village", itemCount: 2, total: 27, expiresAt: "12:59", customer: "Walk-in Queue" },

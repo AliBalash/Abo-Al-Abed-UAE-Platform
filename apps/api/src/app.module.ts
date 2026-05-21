@@ -6,7 +6,7 @@ import { AdminModule } from "./modules/admin/admin.module";
 import { AddressesModule } from "./modules/addresses/addresses.module";
 import { AuditModule } from "./modules/audit/audit.module";
 import { AuthModule } from "./modules/auth/auth.module";
-import { BranchOpsModule } from "./modules/branch-ops/branch-ops.module";
+import { KitchenModule } from "./modules/kitchen/kitchen.module";
 import { BranchesModule } from "./modules/branches/branches.module";
 import { CartModule } from "./modules/cart/cart.module";
 import { CatalogModule } from "./modules/catalog/catalog.module";
@@ -34,7 +34,7 @@ import { CoreModule } from "./core.module";
     CartModule,
     OrdersModule,
     PaymentsModule,
-    BranchOpsModule,
+    KitchenModule,
     NotificationsModule,
     AuditModule,
     ReportsModule,

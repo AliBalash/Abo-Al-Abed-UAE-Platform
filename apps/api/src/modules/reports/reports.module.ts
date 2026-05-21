@@ -35,7 +35,7 @@ class ReportsService {
 class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
-  @Roles("super_admin", "ops_manager", "branch_manager", "support_readonly")
+  @Roles("super_admin", "kitchen_manager", "branch_manager", "support_readonly")
   @Get("summary")
   summary(@Query("branchId") branchId?: string) {
     return this.reportsService.summary(branchId);

@@ -28,8 +28,8 @@ function FrameInner({
             Signed in as <strong>{user?.email ?? "demo"}</strong>
           </div>
           <div className="btn-row">
-            <Link className="btn secondary" href="/ops">
-              Ops
+            <Link className="btn secondary" href="/kitchen">
+              Kitchen
             </Link>
             <Link className="btn secondary" href="/admin">
               Admin
