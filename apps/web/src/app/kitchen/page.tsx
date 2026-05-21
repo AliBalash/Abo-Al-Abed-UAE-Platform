@@ -54,6 +54,18 @@ type KitchenAvailabilityItem = {
   basePrice?: { amount: number };
 };
 
+type Role =
+  | "super_admin"
+  | "kitchen_manager"
+  | "branch_manager"
+  | "cashier"
+  | "kitchen_staff"
+  | "support_readonly"
+  | string;
+
+const kitchenAllowedRoles = new Set<Role>(["super_admin", "kitchen_manager", "branch_manager", "cashier", "kitchen_staff"]);
+const crossBranchRoles = new Set<Role>(["super_admin", "kitchen_manager", "branch_manager"]);
+
 const columns: { key: keyof QueueData; title: string; next?: string; action?: string; tone?: string }[] = [
   { key: "awaitingPayment", title: "Cashier Payment", action: "Confirm Payment", tone: "warning" },
   { key: "paid", title: "Ready to Start", next: "IN_PREPARATION", action: "Start Prep" },
@@ -80,8 +92,13 @@ function minutesSince(value?: string, nowMs?: number | null) {
   return Math.floor(diff / 60000);
 }
 
+function formatClock(nowMs: number | null) {
+  if (nowMs === null) return "--:--";
+  return new Date(nowMs).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
 function KitchenDashboardContent() {
-  const { token, user, logout } = useSession();
+  const { token, user, logout, loading } = useSession();
   const panelMode = (process.env.NEXT_PUBLIC_PANEL_MODE ?? "unified").toLowerCase();
   const adminPanelUrl = process.env.NEXT_PUBLIC_ADMIN_PANEL_URL ?? "/admin";
 
@@ -102,6 +119,12 @@ function KitchenDashboardContent() {
   const [notice, setNotice] = useState("");
   const [lastSyncAt, setLastSyncAt] = useState<Date | null>(null);
   const [nowMs, setNowMs] = useState<number | null>(null);
+  const [accessChecked, setAccessChecked] = useState(false);
+
+  const userRoles = (user?.roles ?? []) as Role[];
+  const canAccessKitchen = userRoles.some((role) => kitchenAllowedRoles.has(role));
+  const canManageMultipleBranches = userRoles.some((role) => crossBranchRoles.has(role));
+  const preferredBranch = user?.staffProfile?.primaryBranch ?? null;
 
   const activeCount = useMemo(
     () => queue.awaitingPayment.length + queue.paid.length + queue.inPreparation.length + queue.ready.length,
@@ -119,6 +142,13 @@ function KitchenDashboardContent() {
     const total = activeOrders.reduce((sum, order) => sum + (minutesSince(order.placedAt, nowMs) ?? 0), 0);
     return Math.round(total / activeOrders.length);
   }, [activeOrders, nowMs]);
+
+  const urgentCount = useMemo(
+    () => activeOrders.filter((order) => (minutesSince(order.placedAt, nowMs) ?? 0) >= 20).length,
+    [activeOrders, nowMs],
+  );
+
+  const branchLabel = queue.branch?.nameEn ?? preferredBranch?.nameEn ?? "--";
 
   const filteredInventory = useMemo(() => {
     const needle = inventorySearch.trim().toLowerCase();
@@ -167,9 +197,15 @@ function KitchenDashboardContent() {
     if (!token) return;
     try {
       const branchData = await apiRequest<Branch[]>("/admin/branches", {}, token);
-      setBranches(branchData.map((branch) => ({ id: branch.id, nameEn: branch.nameEn, code: branch.code })));
-      if (!selectedBranchId && branchData[0]?.id) {
-        setSelectedBranchId(branchData[0].id);
+      const allBranches = branchData.map((branch) => ({ id: branch.id, nameEn: branch.nameEn, code: branch.code }));
+      const scopedBranches =
+        canManageMultipleBranches || !preferredBranch?.id
+          ? allBranches
+          : allBranches.filter((branch) => branch.id === preferredBranch.id);
+
+      setBranches(scopedBranches);
+      if (!selectedBranchId && scopedBranches[0]?.id) {
+        setSelectedBranchId(scopedBranches[0].id);
       }
     } catch {
       if (queue.branch?.id) {
@@ -191,6 +227,7 @@ function KitchenDashboardContent() {
 
   useEffect(() => {
     if (!token) return;
+    if (user && !canAccessKitchen) return;
     void refreshAll();
     void refreshBranches();
 
@@ -199,18 +236,29 @@ function KitchenDashboardContent() {
     }, 15_000);
 
     return () => window.clearInterval(interval);
-  }, [token]);
+  }, [token, user, canAccessKitchen]);
 
   useEffect(() => {
     if (!token || !selectedBranchId) return;
+    if (user && !canAccessKitchen) return;
     void refreshAll(selectedBranchId);
-  }, [selectedBranchId, token]);
+  }, [selectedBranchId, token, user, canAccessKitchen]);
 
   useEffect(() => {
     setNowMs(Date.now());
     const interval = window.setInterval(() => setNowMs(Date.now()), 30_000);
     return () => window.clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    setAccessChecked(true);
+  }, [loading]);
+
+  useEffect(() => {
+    if (!user || !preferredBranch?.id || selectedBranchId) return;
+    setSelectedBranchId(preferredBranch.id);
+  }, [preferredBranch?.id, selectedBranchId, user]);
 
   async function confirmPayment(order: QueueOrder) {
     if (!token) return;
@@ -292,6 +340,42 @@ function KitchenDashboardContent() {
     }
   }
 
+  if (!accessChecked) {
+    return (
+      <div className="kitchen-shell">
+        <div className="kitchen-panel">
+          <h2>Loading kitchen workspace...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (!token) {
+    return null;
+  }
+
+  if (!canAccessKitchen) {
+    return (
+      <div className="kitchen-shell">
+        <div className="kitchen-panel kitchen-lock">
+          <span className="tag danger">Access Restricted</span>
+          <h2>Kitchen panel access is role-protected.</h2>
+          <p className="muted">This workspace is only available for kitchen, cashier, or branch kitchen supervisors.</p>
+          <div className="btn-row">
+            {panelMode !== "kitchen" ? (
+              <Link className="btn secondary" href={adminPanelUrl}>
+                Go to Admin
+              </Link>
+            ) : null}
+            <button className="btn ghost" onClick={logout}>
+              Sign out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="kitchen-shell">
       <header className="kitchen-header">
@@ -299,14 +383,19 @@ function KitchenDashboardContent() {
           <span className="tag">Kitchen Operations Panel</span>
           <h1>Live Kitchen Command</h1>
           <p>
-            Dedicated branch flow for cashier payment, preparation, ready-shelf handoff, and per-branch product stock state.
+            Dedicated branch workflow for incoming app orders, kitchen prep stages, and branch-level product availability.
           </p>
         </div>
 
         <div className="kitchen-header-side">
           <div className="hero-pill">{user?.email ?? "staff"}</div>
           <div className="btn-row">
-            <select value={selectedBranchId} onChange={(event) => setSelectedBranchId(event.target.value)}>
+            <select
+              value={selectedBranchId}
+              onChange={(event) => setSelectedBranchId(event.target.value)}
+              disabled={!canManageMultipleBranches}
+              title={canManageMultipleBranches ? "Select branch" : "Branch locked to your staff profile"}
+            >
               {branches.map((branch) => (
                 <option key={branch.id} value={branch.id}>
                   {branch.nameEn}
@@ -331,6 +420,24 @@ function KitchenDashboardContent() {
 
       {notice ? <div className="notice">{notice}</div> : null}
 
+      <section className="kitchen-quick-strip">
+        <div className="kitchen-quick-card">
+          <span>Active Branch</span>
+          <strong>{branchLabel}</strong>
+          <small>{queue.branch?.code ?? preferredBranch?.code ?? "--"}</small>
+        </div>
+        <div className="kitchen-quick-card">
+          <span>Live Clock</span>
+          <strong>{formatClock(nowMs)}</strong>
+          <small>Auto-sync every 15s</small>
+        </div>
+        <div className="kitchen-quick-card">
+          <span>Urgent Tickets</span>
+          <strong>{urgentCount}</strong>
+          <small>Orders older than 20 min</small>
+        </div>
+      </section>
+
       <section className="kitchen-metrics">
         <MetricCard label="Pending Payment" value={queue.awaitingPayment.length} detail="cashier confirmation" />
         <MetricCard label="Prep Queue" value={queue.paid.length + queue.inPreparation.length} detail="ready to start + cooking" />
@@ -342,16 +449,20 @@ function KitchenDashboardContent() {
         <div className="kitchen-panel">
           <div className="kitchen-section-head">
             <h2>Order Lanes</h2>
-            <p className="muted">Branch {queue.branch?.nameEn ?? user?.staffProfile?.primaryBranch?.nameEn ?? "--"}</p>
+            <p className="muted">Branch {branchLabel}</p>
           </div>
           <div className="queue-grid dense">
             {columns.map((column) => {
               const orders = (queue[column.key] as QueueOrder[]) ?? [];
+              const urgentInLane = orders.filter((order) => (minutesSince(order.placedAt, nowMs) ?? 0) >= 20).length;
               return (
                 <div className="queue-column" key={column.key}>
                   <header>
                     <h3>{column.title}</h3>
-                    <span className={`tag ${column.tone ?? ""}`}>{orders.length}</span>
+                    <div className="lane-badges">
+                      <span className={`tag ${column.tone ?? ""}`}>{orders.length}</span>
+                      {urgentInLane > 0 ? <span className="tag danger">{urgentInLane} urgent</span> : null}
+                    </div>
                   </header>
 
                   {orders.length === 0 ? <p className="muted">No orders.</p> : null}
@@ -522,9 +633,10 @@ function OrderCard({
 }) {
   const age = minutesSince(order.placedAt, nowMs);
   const ageTone = age !== null && age >= 20 ? "danger" : age !== null && age >= 12 ? "warning" : "success";
+  const ageClass = age !== null && age >= 20 ? "is-urgent" : age !== null && age >= 12 ? "is-warning" : "is-stable";
 
   return (
-    <div className="queue-card">
+    <div className={`queue-card ${ageClass}`}>
       <div className="btn-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
         <strong>{order.orderCode}</strong>
         <span className={`tag ${ageTone}`}>{age !== null ? `${age} min` : "--"}</span>
