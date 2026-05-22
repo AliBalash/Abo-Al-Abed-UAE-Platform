@@ -23,6 +23,7 @@ struct HomeView: View {
                     categories
                     productSection(title: selectedCategoryTitle, subtitle: selectedCategorySubtitle, products: filteredProducts)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
             }
@@ -98,58 +99,87 @@ struct HomeView: View {
         .buttonStyle(.plain)
     }
 
-    private var topStripBanners: [HomeBanner] {
-        model.home.banners
-            .filter { $0.placement == .topStrip }
-            .sorted { $0.displayOrder < $1.displayOrder }
+    private var topStripAdBanners: [PromoBannerAsset] {
+        [
+            PromoBannerAsset(id: "hareeq", baseName: "hareeq-offer-slider", fileExtension: "jpg", isGif: false),
+            PromoBannerAsset(id: "taghmisat", baseName: "taghmisat-offer-slider", fileExtension: "jpg", isGif: false),
+            PromoBannerAsset(id: "baby-satl", baseName: "baby-satl-offer-slider", fileExtension: "jpg", isGif: false),
+        ]
     }
 
-    private var bottomFeatureBanner: HomeBanner? {
-        model.home.banners
-            .filter { $0.placement == .bottomFeature }
-            .sorted { $0.displayOrder < $1.displayOrder }
-            .first
+    private var bottomGifBanner: PromoBannerAsset {
+        PromoBannerAsset(id: "app-deal", baseName: "app-deal-30", fileExtension: "gif", isGif: true)
     }
 
+    private func bundledBannerURL(for banner: PromoBannerAsset) -> URL? {
+        Bundle.main.url(forResource: banner.baseName, withExtension: banner.fileExtension, subdirectory: "Banners")
+            ?? Bundle.main.url(forResource: banner.baseName, withExtension: banner.fileExtension)
+    }
+
+    private var hasOfferContent: Bool {
+        !topStripAdBanners.isEmpty || bundledBannerURL(for: bottomGifBanner) != nil
+    }
+
+    @ViewBuilder
     private var offerBanners: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if !topStripBanners.isEmpty || bottomFeatureBanner != nil {
-                HStack {
-                    Text("Exclusive Offers")
-                        .font(.title3.bold())
+        if hasOfferContent {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 6) {
+                    Text("EXCLUSIVE OFFERS")
+                        .font(.subheadline.weight(.black))
+                    Text("🎁")
                     Spacer()
-                    Image(systemName: "gift.fill")
-                        .foregroundStyle(BrandTheme.brand)
+                    Image(systemName: "arrow.up.forward.square")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
-            }
 
-            if !topStripBanners.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(topStripBanners) { banner in
-                            BannerMediaView(url: banner.imageURL, isGif: banner.isGif)
-                                .frame(width: 176, height: 86)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .stroke(Color.black.opacity(0.05), lineWidth: 1)
-                                )
+                if !topStripAdBanners.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(topStripAdBanners) { banner in
+                                BannerMediaView(url: bundledBannerURL(for: banner), isGif: banner.isGif)
+                                    .frame(width: 248)
+                                    .aspectRatio(1206.0 / 621.0, contentMode: .fit)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                                    )
+                            }
                         }
+                        .padding(.trailing, 2)
                     }
-                    .padding(.trailing, 6)
                 }
-            }
 
-            if let bottomFeatureBanner {
-                BannerMediaView(url: bottomFeatureBanner.imageURL, isGif: bottomFeatureBanner.isGif)
+                Rectangle()
+                    .fill(Color.black.opacity(0.06))
+                    .frame(height: 1)
+
+                BannerMediaView(url: bundledBannerURL(for: bottomGifBanner), isGif: true)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 126)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .aspectRatio(904.0 / 310.0, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.black.opacity(0.05), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.black.opacity(0.08), lineWidth: 1)
                     )
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(
+                LinearGradient(
+                    colors: [Color.white, Color.white.opacity(0.97)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                in: RoundedRectangle(cornerRadius: 16)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.black.opacity(0.08), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.04), radius: 12, y: 4)
         }
     }
 
@@ -313,6 +343,13 @@ struct HomeView: View {
     }
 }
 
+private struct PromoBannerAsset: Identifiable {
+    let id: String
+    let baseName: String
+    let fileExtension: String
+    let isGif: Bool
+}
+
 private struct BannerMediaView: View {
     let url: URL?
     let isGif: Bool
@@ -343,7 +380,7 @@ private struct BannerMediaView: View {
                 BannerPlaceholder()
             }
         }
-        .background(Color.white)
+        .background(Color(red: 0.97, green: 0.97, blue: 0.97))
     }
 }
 
@@ -361,19 +398,56 @@ private struct BannerPlaceholder: View {
 private struct GIFWebView: UIViewRepresentable {
     let url: URL
 
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView(frame: .zero)
+        webView.isUserInteractionEnabled = false
         webView.scrollView.isScrollEnabled = false
+        webView.scrollView.backgroundColor = .clear
         webView.backgroundColor = .clear
         webView.isOpaque = false
-        webView.contentMode = .scaleAspectFill
+        webView.contentMode = .scaleToFill
         return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        if webView.url != url {
-            webView.load(URLRequest(url: url))
+        if context.coordinator.loadedURL != url {
+            let escapedURL = url.absoluteString.replacingOccurrences(of: "\"", with: "%22")
+            let html = """
+            <html>
+              <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                <style>
+                  html, body {
+                    margin: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+                    background: transparent;
+                  }
+                  img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    display: block;
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="\(escapedURL)" />
+              </body>
+            </html>
+            """
+            webView.loadHTMLString(html, baseURL: url.deletingLastPathComponent())
+            context.coordinator.loadedURL = url
         }
+    }
+
+    final class Coordinator {
+        var loadedURL: URL?
     }
 }
 

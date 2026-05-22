@@ -6,21 +6,21 @@ struct BrandBackground: View {
             LinearGradient(
                 colors: [
                     Color.white,
-                    BrandTheme.cream.opacity(0.88),
-                    Color(red: 0.95, green: 0.95, blue: 0.95),
+                    Color(red: 0.98, green: 0.98, blue: 0.985),
+                    Color(red: 0.95, green: 0.955, blue: 0.965),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
             Circle()
-                .fill(BrandTheme.sun.opacity(0.12))
+                .fill(Color.white.opacity(0.55))
                 .frame(width: 360, height: 360)
                 .blur(radius: 36)
                 .offset(x: 150, y: -250)
 
             Circle()
-                .fill(BrandTheme.brand.opacity(0.05))
+                .fill(Color.black.opacity(0.03))
                 .frame(width: 280, height: 280)
                 .blur(radius: 28)
                 .offset(x: -180, y: 320)

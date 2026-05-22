@@ -3,16 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03181CFA92E0F141AC1887B2 /* taghmisat-offer-slider.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D01BDF85ED8DFAAFAC394052 /* taghmisat-offer-slider.jpg */; };
 		05045245EE9D55D512091DEA /* AboAlAbedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B321168A7465498F162B1C /* AboAlAbedApp.swift */; };
 		086EA5711513398415BACAF0 /* BrandComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9188771B0B90B2D2AE10539 /* BrandComponents.swift */; };
 		11841165FE0BFC7E806AE092 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83A32469169502533CB6AE2 /* RootView.swift */; };
 		270D0382A97CF1D63BCB833D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C41D94C984E668A29BE8FD53 /* MapKit.framework */; };
 		4C5F4084522CEEF297FD0DAB /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCE5B5E06828C31A7702668 /* AuthView.swift */; };
 		4D2D45DC9BB819AE99CCD10E /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3D4B5E4E0DA5D111CA286D /* BrandTheme.swift */; };
+		55A38441E082610FF98EBDCA /* baby-satl-offer-slider.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 73C390481F9175CF0801141D /* baby-satl-offer-slider.jpg */; };
 		6A7D7D9EF4E73672336FE487 /* BranchSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CC48B6FA2ACFA1ECBDC45C /* BranchSelectionView.swift */; };
 		6C8A2AB54C6F2C77E77AFBAA /* AddressPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3965DFFE4ACAEB888A8D383A /* AddressPickerView.swift */; };
 		9022EC2E71C1F5C62828F4F2 /* ProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4874F21C4EAB2AA65F400765 /* ProductDetailView.swift */; };
@@ -24,8 +26,10 @@
 		B9A60987DE661C316409A13B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8592E04CAFB9C87BAC70C6B3 /* HomeView.swift */; };
 		CE5B1074F4861712E7750E2F /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB72D60B85AC06A85F862C0 /* MockAPIClient.swift */; };
 		D5556A57CDC607CF77E924E6 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12097DA810AB391AB61A43B7 /* AppEnvironment.swift */; };
+		D92A7F929938D92FC6D47EF1 /* app-deal-30.gif in Resources */ = {isa = PBXBuildFile; fileRef = D9B688565DC63D168DE163AD /* app-deal-30.gif */; };
 		F07659F1FC556E2C476839EE /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112C5319F8DAD53744A0CD20 /* Models.swift */; };
 		F513A938B71439312830C5D8 /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94A6898A3F6A4822A1B0B52 /* CartView.swift */; };
+		FA83BD5D024255FE620CF731 /* hareeq-offer-slider.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3AFC487EBEE7F2D25523B547 /* hareeq-offer-slider.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,25 +44,29 @@
 
 /* Begin PBXFileReference section */
 		06B321168A7465498F162B1C /* AboAlAbedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboAlAbedApp.swift; sourceTree = "<group>"; };
-		10625C4C7D2DA3B0A005C7F8 /* AboAlAbedTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AboAlAbedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		10625C4C7D2DA3B0A005C7F8 /* AboAlAbedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AboAlAbedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		112C5319F8DAD53744A0CD20 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		12097DA810AB391AB61A43B7 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		1C3D4B5E4E0DA5D111CA286D /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
 		299CBD3A705F924EF5AC3AB4 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		37D22288CF70BD01068E04C0 /* OrderTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderTrackingView.swift; sourceTree = "<group>"; };
 		3965DFFE4ACAEB888A8D383A /* AddressPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressPickerView.swift; sourceTree = "<group>"; };
+		3AFC487EBEE7F2D25523B547 /* hareeq-offer-slider.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "hareeq-offer-slider.jpg"; sourceTree = "<group>"; };
 		43CC48B6FA2ACFA1ECBDC45C /* BranchSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchSelectionView.swift; sourceTree = "<group>"; };
 		4874F21C4EAB2AA65F400765 /* ProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailView.swift; sourceTree = "<group>"; };
 		4F1977F0EE992E9F67896F62 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
+		73C390481F9175CF0801141D /* baby-satl-offer-slider.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "baby-satl-offer-slider.jpg"; sourceTree = "<group>"; };
 		7826D3AB293FB84560574D9B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7C5A018F1169A75504CF564A /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		8592E04CAFB9C87BAC70C6B3 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		AEEAF29E416EAF4394CB87F6 /* AboAlAbed.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AboAlAbed.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AEEAF29E416EAF4394CB87F6 /* AboAlAbed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AboAlAbed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCE5B5E06828C31A7702668 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		C41D94C984E668A29BE8FD53 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		C94A6898A3F6A4822A1B0B52 /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
 		CAB72D60B85AC06A85F862C0 /* MockAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAPIClient.swift; sourceTree = "<group>"; };
+		D01BDF85ED8DFAAFAC394052 /* taghmisat-offer-slider.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "taghmisat-offer-slider.jpg"; sourceTree = "<group>"; };
 		D83A32469169502533CB6AE2 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		D9B688565DC63D168DE163AD /* app-deal-30.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "app-deal-30.gif"; sourceTree = "<group>"; };
 		F9188771B0B90B2D2AE10539 /* BrandComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandComponents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -147,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				7826D3AB293FB84560574D9B /* Assets.xcassets */,
+				85FF386754E45AD0567927A2 /* Banners */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -157,6 +166,17 @@
 				112C5319F8DAD53744A0CD20 /* Models.swift */,
 			);
 			path = Domain;
+			sourceTree = "<group>";
+		};
+		85FF386754E45AD0567927A2 /* Banners */ = {
+			isa = PBXGroup;
+			children = (
+				D9B688565DC63D168DE163AD /* app-deal-30.gif */,
+				73C390481F9175CF0801141D /* baby-satl-offer-slider.jpg */,
+				3AFC487EBEE7F2D25523B547 /* hareeq-offer-slider.jpg */,
+				D01BDF85ED8DFAAFAC394052 /* taghmisat-offer-slider.jpg */,
+			);
+			path = Banners;
 			sourceTree = "<group>";
 		};
 		9C8BFD738DE802C151CC0C59 = {
@@ -284,7 +304,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2620;
 			};
 			buildConfigurationList = BE382A5D28C762D4ED537A3B /* Build configuration list for PBXProject "AboAlAbed" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -296,7 +316,6 @@
 			);
 			mainGroup = 9C8BFD738DE802C151CC0C59;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -312,6 +331,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				97725EBD9B1ECF019AD72EC0 /* Assets.xcassets in Resources */,
+				D92A7F929938D92FC6D47EF1 /* app-deal-30.gif in Resources */,
+				55A38441E082610FF98EBDCA /* baby-satl-offer-slider.jpg in Resources */,
+				FA83BD5D024255FE620CF731 /* hareeq-offer-slider.jpg in Resources */,
+				03181CFA92E0F141AC1887B2 /* taghmisat-offer-slider.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,6 +420,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -416,6 +440,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -459,6 +484,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -471,6 +497,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
