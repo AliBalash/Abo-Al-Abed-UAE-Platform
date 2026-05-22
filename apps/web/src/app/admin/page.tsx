@@ -97,10 +97,12 @@ type Banner = {
   imageUrl: string;
   ctaLabelEn: string;
   ctaTarget: string;
-  theme?: string;
+  theme?: BannerTheme;
   displayOrder?: number;
   isActive: boolean;
 };
+
+type BannerTheme = "top_strip" | "bottom_feature";
 
 type QueueData = {
   branch?: { id: string; code?: string; nameEn?: string };
@@ -145,9 +147,56 @@ const emptyBannerForm = {
   imageUrl: "",
   ctaLabelEn: "View Offer",
   ctaTarget: "/menu",
-  theme: "top_strip",
+  theme: "top_strip" as BannerTheme,
   displayOrder: 1,
 };
+
+const bundledBannerPresets: Array<{
+  id: string;
+  label: string;
+  theme: BannerTheme;
+  imageUrl: string;
+  titleEn: string;
+  subtitleEn: string;
+  displayOrder: number;
+}> = [
+  {
+    id: "hareeq-top",
+    label: "Top Strip · Hareeq",
+    theme: "top_strip",
+    imageUrl: "/assets/banners/Hareeq_Offer_Slider_T01.jpg",
+    titleEn: "Hareeq Offer",
+    subtitleEn: "Hot slider deal for fast pickup.",
+    displayOrder: 1,
+  },
+  {
+    id: "taghmisat-top",
+    label: "Top Strip · Taghmisat",
+    theme: "top_strip",
+    imageUrl: "/assets/banners/Taghmisat_Offer_Slider_T01.jpg",
+    titleEn: "Taghmisat Box",
+    subtitleEn: "Sharing box offer for groups.",
+    displayOrder: 2,
+  },
+  {
+    id: "baby-top",
+    label: "Top Strip · Baby Satl",
+    theme: "top_strip",
+    imageUrl: "/assets/banners/Baby_Satl_Offer_Slider_T01.jpg",
+    titleEn: "Baby Satl",
+    subtitleEn: "Big value family pickup deal.",
+    displayOrder: 3,
+  },
+  {
+    id: "app-gif-bottom",
+    label: "Bottom Feature · 30% App GIF",
+    theme: "bottom_feature",
+    imageUrl: "/assets/banners/app-deal-30.gif",
+    titleEn: "30% App Deal",
+    subtitleEn: "Order from app and save on pickup.",
+    displayOrder: 10,
+  },
+];
 
 const statusTone: Record<AvailabilityStatus, string> = {
   AVAILABLE: "success",
@@ -206,6 +255,7 @@ function AdminDashboardContent() {
   const [branchEtaDrafts, setBranchEtaDrafts] = useState<Record<string, number>>({});
   const [availabilityDrafts, setAvailabilityDrafts] = useState<Record<string, { status: AvailabilityStatus; note: string }>>({});
   const [bannerForm, setBannerForm] = useState(emptyBannerForm);
+  const [selectedBannerPreset, setSelectedBannerPreset] = useState("");
 
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
@@ -388,6 +438,23 @@ function AdminDashboardContent() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function applyBannerPreset(presetId: string) {
+    setSelectedBannerPreset(presetId);
+    if (!presetId) return;
+
+    const preset = bundledBannerPresets.find((item) => item.id === presetId);
+    if (!preset) return;
+
+    setBannerForm((current) => ({
+      ...current,
+      titleEn: preset.titleEn,
+      subtitleEn: preset.subtitleEn,
+      imageUrl: preset.imageUrl,
+      theme: preset.theme,
+      displayOrder: preset.displayOrder,
+    }));
   }
 
   return (
@@ -1088,19 +1155,30 @@ function AdminDashboardContent() {
                 subtitle="Top Strip: unlimited compact banners. Bottom Feature: full-width banner/GIF. Designed for the iOS home layout."
               />
               <div className="mini-grid" style={{ marginBottom: 12 }}>
-                <span className="tag">Bundled asset: /assets/banners/hareeq-offer-slider.jpg</span>
-                <span className="tag">Bundled asset: /assets/banners/taghmisat-offer-slider.jpg</span>
-                <span className="tag">Bundled asset: /assets/banners/baby-satl-offer-slider.jpg</span>
+                <span className="tag">Bundled asset: /assets/banners/Hareeq_Offer_Slider_T01.jpg</span>
+                <span className="tag">Bundled asset: /assets/banners/Taghmisat_Offer_Slider_T01.jpg</span>
+                <span className="tag">Bundled asset: /assets/banners/Baby_Satl_Offer_Slider_T01.jpg</span>
                 <span className="tag">Bundled GIF: /assets/banners/app-deal-30.gif</span>
               </div>
               <div className="input-grid two">
+                <label className="field span-2">
+                  <span>Quick Preset</span>
+                  <select value={selectedBannerPreset} onChange={(event) => applyBannerPreset(event.target.value)}>
+                    <option value="">Manual entry</option>
+                    {bundledBannerPresets.map((preset) => (
+                      <option key={preset.id} value={preset.id}>
+                        {preset.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <label className="field">
                   <span>Title</span>
                   <input value={bannerForm.titleEn} onChange={(event) => setBannerForm({ ...bannerForm, titleEn: event.target.value })} />
                 </label>
                 <label className="field">
                   <span>Theme / Slot</span>
-                  <select value={bannerForm.theme} onChange={(event) => setBannerForm({ ...bannerForm, theme: event.target.value })}>
+                  <select value={bannerForm.theme} onChange={(event) => setBannerForm({ ...bannerForm, theme: event.target.value as BannerTheme })}>
                     <option value="top_strip">Top Strip (small cards)</option>
                     <option value="bottom_feature">Bottom Feature (full width, supports GIF)</option>
                   </select>
@@ -1134,6 +1212,7 @@ function AdminDashboardContent() {
                     void saveAction("Banner", async () => {
                       await apiRequest("/admin/banners", { method: "POST", body: JSON.stringify(bannerForm) }, token!);
                       setBannerForm(emptyBannerForm);
+                      setSelectedBannerPreset("");
                     })
                   }
                 >

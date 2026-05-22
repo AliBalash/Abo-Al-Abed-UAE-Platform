@@ -16,7 +16,10 @@ class CatalogService {
   async home(userId?: string, assetBaseUrl?: string) {
     const [banners, categories, featuredProducts, announcement] = await Promise.all([
       this.prisma.homeBanner.findMany({
-        where: { isActive: true },
+        where: {
+          isActive: true,
+          theme: { in: ["top_strip", "bottom_feature"] },
+        },
         orderBy: { displayOrder: "asc" },
       }),
       this.prisma.menuCategory.findMany({
@@ -45,6 +48,7 @@ class CatalogService {
         ctaLabel: { en: banner.ctaLabelEn, ar: banner.ctaLabelAr },
         ctaTarget: banner.ctaTarget,
         theme: banner.theme,
+        displayOrder: banner.displayOrder,
       })),
       categories: categories.map((category) => ({
         id: category.id,

@@ -251,6 +251,8 @@ class CreateBannerDto {
   isActive?: boolean;
 }
 
+type BannerSlot = "top_strip" | "bottom_feature";
+
 @Injectable()
 class AdminService {
   constructor(
@@ -488,21 +490,32 @@ class AdminService {
   }
 
   async createBanner(actor: AuthenticatedUser, dto: CreateBannerDto, assetBaseUrl?: string) {
-    const banner = await this.prisma.homeBanner.create({
-      data: {
-        titleEn: dto.titleEn,
-        titleAr: dto.titleAr || dto.titleEn,
-        subtitleEn: dto.subtitleEn,
-        subtitleAr: dto.subtitleAr || dto.subtitleEn,
-        imageUrl: dto.imageUrl,
-        ctaLabelEn: dto.ctaLabelEn || "Open",
-        ctaLabelAr: dto.ctaLabelAr || dto.ctaLabelEn || "Open",
-        ctaTarget: dto.ctaTarget || "/menu",
-        theme: dto.theme || "top_strip",
-        displayOrder: dto.displayOrder ?? 1,
-        isActive: dto.isActive ?? true,
-      },
+    const theme = this.normalizeBannerTheme(dto.theme);
+    const isActive = dto.isActive ?? true;
+    const banner = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.homeBanner.create({
+        data: {
+          titleEn: dto.titleEn,
+          titleAr: dto.titleAr || dto.titleEn,
+          subtitleEn: dto.subtitleEn,
+          subtitleAr: dto.subtitleAr || dto.subtitleEn,
+          imageUrl: dto.imageUrl,
+          ctaLabelEn: dto.ctaLabelEn || "Open",
+          ctaLabelAr: dto.ctaLabelAr || dto.ctaLabelEn || "Open",
+          ctaTarget: dto.ctaTarget || "/menu",
+          theme,
+          displayOrder: dto.displayOrder ?? 1,
+          isActive,
+        },
+      });
+
+      if (theme === "bottom_feature" && isActive) {
+        await this.deactivateOtherBottomFeatureBanners(tx, created.id);
+      }
+
+      return created;
     });
+
     await this.audit(actor, "banner.created", "home_banner", banner.id, dto);
     return {
       ...banner,
@@ -511,19 +524,32 @@ class AdminService {
   }
 
   async updateBanner(actor: AuthenticatedUser, bannerId: string, dto: UpdateBannerDto) {
-    const banner = await this.prisma.homeBanner.update({
-      where: { id: bannerId },
-      data: {
-        titleEn: dto.titleEn,
-        subtitleEn: dto.subtitleEn,
-        imageUrl: dto.imageUrl,
-        ctaLabelEn: dto.ctaLabelEn,
-        ctaTarget: dto.ctaTarget,
-        theme: dto.theme,
-        displayOrder: dto.displayOrder,
-        isActive: dto.isActive,
-      },
+    const banner = await this.prisma.$transaction(async (tx) => {
+      const currentBanner = await tx.homeBanner.findUniqueOrThrow({ where: { id: bannerId } });
+      const theme = this.normalizeBannerTheme(dto.theme ?? currentBanner.theme);
+      const isActive = dto.isActive ?? currentBanner.isActive;
+
+      const updated = await tx.homeBanner.update({
+        where: { id: bannerId },
+        data: {
+          titleEn: dto.titleEn,
+          subtitleEn: dto.subtitleEn,
+          imageUrl: dto.imageUrl,
+          ctaLabelEn: dto.ctaLabelEn,
+          ctaTarget: dto.ctaTarget,
+          theme,
+          displayOrder: dto.displayOrder,
+          isActive,
+        },
+      });
+
+      if (theme === "bottom_feature" && isActive) {
+        await this.deactivateOtherBottomFeatureBanners(tx, bannerId);
+      }
+
+      return updated;
     });
+
     await this.audit(actor, "banner.updated", "home_banner", banner.id, dto);
     return banner;
   }
@@ -695,6 +721,21 @@ class AdminService {
 
   private async audit(actor: AuthenticatedUser, action: string, entityType: string, entityId: string, metadata?: unknown) {
     await this.auditService.log(actor.id, action, entityType, entityId, metadata as any);
+  }
+
+  private normalizeBannerTheme(theme?: string): BannerSlot {
+    return theme === "bottom_feature" ? "bottom_feature" : "top_strip";
+  }
+
+  private async deactivateOtherBottomFeatureBanners(tx: Prisma.TransactionClient, activeBannerId: string) {
+    await tx.homeBanner.updateMany({
+      where: {
+        id: { not: activeBannerId },
+        isActive: true,
+        theme: "bottom_feature",
+      },
+      data: { isActive: false },
+    });
   }
 
 }
