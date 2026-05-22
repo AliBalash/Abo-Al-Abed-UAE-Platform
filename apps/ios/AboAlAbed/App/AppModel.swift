@@ -32,8 +32,8 @@ final class AppModel: ObservableObject {
 
         do {
             let result = try await environment.apiClient.login(email: email, password: password)
-            session = result
             await loadBootstrapData()
+            session = result
         } catch {
             isBusy = false
             isBootstrapping = false
